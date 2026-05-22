@@ -1,8 +1,8 @@
-# Rheactor Query Builder for SQLite - TypeScript
+# Rheactor Query Builder for PostgreSQL - TypeScript
 
 ## Project Overview
 
-A type-safe SQL query builder for SQLite that generates parameterized queries using method chaining. This is a query generator only (does not execute queries). Future plans include MySQL support.
+A type-safe SQL query builder for PostgreSQL that generates parameterized queries using method chaining. This is a query generator only (does not execute queries).
 
 ## Project Philosophy
 
@@ -11,13 +11,6 @@ A type-safe SQL query builder for SQLite that generates parameterized queries us
 - No runtime validations - user responsibility
 - Focus on performance and basic type safety
 - Minimalist and predictable design
-
-## Performance Guidelines
-
-- Zero overhead: no extra processing layers
-- Maximum query generation optimization
-- No runtime validations
-- No unnecessary data transformations
 
 ## Architecture
 
@@ -44,7 +37,7 @@ A type-safe SQL query builder for SQLite that generates parameterized queries us
 
 ## Parameter Handling
 
-- Uses SQLite numbered placeholders: `?1`, `?2`, `?3`
+- Uses PostgreSQL numbered placeholders: `$1`, `$2`, `$3`
 - Returns object with `{ query: string, parameters: any[] }`
 
 ## Extension Points
@@ -59,10 +52,9 @@ A type-safe SQL query builder for SQLite that generates parameterized queries us
 
 - Run `pnpm test` to ensure no regressions
 - If tests fail, analyze errors and fix them before proceeding
-- If tests passes
+- If tests pass:
   - Remove unused imports, variables, or functions immediately
-  - Run `pnpm prettier:fix` (if available in package.json)
-  - Run `pnpm eslint:fix` (if available in package.json)
+  - Run `pnpm eslint:fix` (if available)
   - Verify that fixes were applied successfully
   - Verify dead-code removal
   - Verify and guarantee coverage 100%
@@ -84,7 +76,7 @@ A type-safe SQL query builder for SQLite that generates parameterized queries us
 
 Before implementing any feature or fix:
 
-1. Generate a minimum of 10 detailed to-dos outlining each step
+1. Generate to-dos outlining each step
 2. Break down complex operations into atomic tasks
 3. Include validation and testing steps in the to-do list
 
@@ -104,32 +96,17 @@ After completing any task:
 - Focus on generated SQL correctness and parameter binding
 - Always run tests after code changes
 
-## Roadmap (Do Not Implement Yet)
-
-- JOIN support (INNER, LEFT, RIGHT, CROSS)
-- Transaction/savepoint support
-- CTE (Common Table Expressions)
-
 ## Examples
 
-```
+```typescript
 // SELECT
 const query =
   sql.select("id", "name")
     .from("users")
-    .where(sql.op("age", ">", 18))
+    .where(sql.gt("age", 18))
     .orderBy("name", "ASC")
     .limit(10);
 
 // Aggregate
 const count = sql.call("COUNT", "*");
 ```
-
-## Response Format
-
-When suggesting changes:
-
-- Explain reasoning in Portuguese
-- Provide complete, production-ready code
-- Highlight key decisions made
-- Include testing strategy when relevant

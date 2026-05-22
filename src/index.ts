@@ -15,7 +15,7 @@ import { BuilderInsert } from "@/BuilderInsert";
 import { BuilderSelect } from "@/BuilderSelect";
 import { BuilderSetOperation } from "@/BuilderSetOperation";
 import { BuilderUpdate } from "@/BuilderUpdate";
-import { call, customCall } from "@/supports/SqliteFunctions";
+import { call, customCall } from "@/supports/PostgresFunctions";
 
 const functions = {
   and(...expressions: Array<Falseable<Expression>>): Expression {
@@ -36,7 +36,7 @@ const functions = {
     return { type: "CAST", expression, cast: castType };
   },
 
-  collate(expression: Expression, collateType: Collate = "BINARY"): Expression {
+  collate(expression: Expression, collateType: Collate = "C"): Expression {
     return { type: "COLLATE", expression, collate: collateType };
   },
 
@@ -93,10 +93,6 @@ const functions = {
 
   like(identifier: Identifier, pattern: Expression): Expression {
     return { type: "LIKE", identifier, expression: pattern };
-  },
-
-  match(identifier: Identifier, pattern: Expression): Expression {
-    return { type: "MATCH", identifier, expression: pattern };
   },
 
   lt(sideA: Expression, sideB: Expression): Expression {
@@ -168,9 +164,7 @@ const functions = {
   },
 
   op(operator: MathOperator, expressionA: Expression, expressionB: Expression): Expression {
-    return operator === "**"
-      ? functions.call("POW", expressionA, expressionB)
-      : { type: "OPERATOR", operator, expressionA, expressionB };
+    return { type: "OPERATOR", operator, expressionA, expressionB };
   },
 
   sum(expressionA: Expression, expressionB: Expression) {

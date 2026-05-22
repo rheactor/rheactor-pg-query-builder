@@ -48,7 +48,7 @@ export abstract class Builder {
           parameters.set(buildOperation.value, parameters.size + 1);
         }
 
-        query.push(`?${parameters.get(buildOperation.value)}`);
+        query.push(`$${parameters.get(buildOperation.value)}`);
       }
     }
 

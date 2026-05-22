@@ -2308,8 +2308,9 @@ packages:
     resolution: {integrity: sha512-pyFS63ptit/P5WqUkt+UUfe+4oevH+bFeIiPPdfb0pFeYEu/1ELnJu5l+5EcTKYL5M7zaAa7S8ddywgXypqKCw==}
     engines: {node: '>= 0.4'}
 
-  node-releases@2.0.44:
-    resolution: {integrity: sha512-5WUyunoPMsvvEhS8AxHtRzP+oA8UCkJ7YRxatWKjngndhDGLiqEVAQKWjFAiAiuL8zMRGzGSJxFnLetoa43qGQ==}
+  node-releases@2.0.45:
+    resolution: {integrity: sha512-iIbHXV9eBB2nB0wa7oTsrrXq+qQt+9SIlx9AX3T96YgobtEQfis5n6TJ6vV+3QP8DwdriEAcGhARaFCu37peBg==}
+    engines: {node: '>=18'}
 
   normalize-url@8.1.1:
     resolution: {integrity: sha512-JYc0DPlpGWB40kH5g07gGTrYuMqV653k3uBKY6uITPWds3M0ov3GaWGp9lbE3Bzngx8+XkfzgvASb9vk9JDFXQ==}
@@ -2588,8 +2589,8 @@ packages:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
     hasBin: true
 
-  semver@7.8.0:
-    resolution: {integrity: sha512-AcM7dV/5ul4EekoQ29Agm5vri8JNqRyj39o0qpX6vDF2GZrtutZl5RwgD1XnZjiTAfncsJhMI48QQH3sN87YNA==}
+  semver@7.8.1:
+    resolution: {integrity: sha512-rkVq3IXh+4FDGch+KwzX3aV9W3kO54GyEgpvBzSyctDA6Xtd7RJQV1xmXbeQp5v7+VzLOfVqiutSE6GICgPFvg==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -3017,8 +3018,8 @@ packages:
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
 
-  yauzl@3.3.0:
-    resolution: {integrity: sha512-PtGEvEP30p7sbIBJKUBjUnqgTVOyMURc4dLo9iNyAJnNIEz9pm88cCXF21w94Kg3k6RXkeZh5DHOGS0qEONvNQ==}
+  yauzl@3.3.1:
+    resolution: {integrity: sha512-RNPCUkiE/ZgO4w8i9U5yDQVHaFDdnzaFANElRvpJteCspvmv2VqrRb9lvS6odVD+jqI/zDsxAHJVsafpcheVQQ==}
     engines: {node: '>=12'}
 
   yocto-queue@0.1.0:
@@ -3514,7 +3515,7 @@ snapshots:
       commander: 8.3.0
       minimatch: 9.0.9
       piscina: 4.9.2
-      semver: 7.8.0
+      semver: 7.8.1
       slash: 3.0.0
       source-map: 0.7.6
       tinyglobby: 0.2.16
@@ -3693,7 +3694,7 @@ snapshots:
       globby: 11.1.0
       is-glob: 4.0.3
       minimatch: 9.0.9
-      semver: 7.8.0
+      semver: 7.8.1
       ts-api-utils: 1.4.3(typescript@6.0.3)
     optionalDependencies:
       typescript: 6.0.3
@@ -3708,7 +3709,7 @@ snapshots:
       '@typescript-eslint/visitor-keys': 8.59.4
       debug: 4.4.3
       minimatch: 10.2.5
-      semver: 7.8.0
+      semver: 7.8.1
       tinyglobby: 0.2.16
       ts-api-utils: 2.5.0(typescript@6.0.3)
       typescript: 6.0.3
@@ -3942,7 +3943,7 @@ snapshots:
     dependencies:
       file-type: 21.3.4
       get-stream: 9.0.1
-      yauzl: 3.3.0
+      yauzl: 3.3.1
     transitivePeerDependencies:
       - supports-color
 
@@ -4107,7 +4108,7 @@ snapshots:
   binary-version-check@6.1.0:
     dependencies:
       binary-version: 7.1.0
-      semver: 7.8.0
+      semver: 7.8.1
       semver-truncate: 3.0.0
 
   binary-version@7.1.0:
@@ -4137,7 +4138,7 @@ snapshots:
       baseline-browser-mapping: 2.10.31
       caniuse-lite: 1.0.30001793
       electron-to-chromium: 1.5.360
-      node-releases: 2.0.44
+      node-releases: 2.0.45
       update-browserslist-db: 1.2.3(browserslist@4.28.2)
 
   buffer-crc32@0.2.13: {}
@@ -4492,7 +4493,7 @@ snapshots:
       eslint-import-context: 0.1.9(unrs-resolver@1.12.2)
       is-glob: 4.0.3
       minimatch: 10.2.5
-      semver: 7.8.0
+      semver: 7.8.1
       stable-hash-x: 0.2.0
       unrs-resolver: 1.12.2
     optionalDependencies:
@@ -4619,7 +4620,7 @@ snapshots:
       pluralize: 8.0.0
       regexp-tree: 0.1.27
       regjsparser: 0.13.1
-      semver: 7.8.0
+      semver: 7.8.1
       strip-indent: 4.1.1
 
   eslint-plugin-unused-imports@4.4.1(@typescript-eslint/eslint-plugin@8.59.4(@typescript-eslint/parser@8.59.4(eslint@10.4.0)(typescript@6.0.3))(eslint@10.4.0)(typescript@6.0.3))(eslint@10.4.0):
@@ -5058,7 +5059,7 @@ snapshots:
 
   is-bun-module@2.0.0:
     dependencies:
-      semver: 7.8.0
+      semver: 7.8.1
 
   is-callable@1.2.7: {}
 
@@ -5320,7 +5321,7 @@ snapshots:
 
   make-dir@4.0.0:
     dependencies:
-      semver: 7.8.0
+      semver: 7.8.1
 
   math-intrinsics@1.1.0: {}
 
@@ -5370,7 +5371,7 @@ snapshots:
       object.entries: 1.1.9
       semver: 6.3.1
 
-  node-releases@2.0.44: {}
+  node-releases@2.0.45: {}
 
   normalize-url@8.1.1: {}
 
@@ -5679,11 +5680,11 @@ snapshots:
 
   semver-truncate@3.0.0:
     dependencies:
-      semver: 7.8.0
+      semver: 7.8.1
 
   semver@6.3.1: {}
 
-  semver@7.8.0: {}
+  semver@7.8.1: {}
 
   set-function-length@1.2.2:
     dependencies:
@@ -5924,7 +5925,7 @@ snapshots:
       global-prefix: 4.0.0
       minimist: 1.2.8
       resolve: 1.22.12
-      semver: 7.8.0
+      semver: 7.8.1
       strip-ansi: 6.0.1
 
   tsconfck@3.1.6(typescript@6.0.3):
@@ -6162,7 +6163,7 @@ snapshots:
 
   yallist@3.1.1: {}
 
-  yauzl@3.3.0:
+  yauzl@3.3.1:
     dependencies:
       buffer-crc32: 0.2.13
       pend: 1.2.0

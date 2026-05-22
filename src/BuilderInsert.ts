@@ -8,12 +8,8 @@ import type { Identifier } from "@/types/Identifier";
 import { Builder } from "@/Builder";
 import { BuilderConflict } from "@/BuilderConflict";
 
-type OrClause = "ABORT" | "FAIL" | "IGNORE" | "REPLACE" | "ROLLBACK";
-
 export class BuilderInsert extends Builder {
   private readonly onConflictBuilders: BuilderConflict[] = [];
-
-  private orClauseValue?: OrClause;
 
   public constructor(table: Identifier, columns: Identifier[]) {
     super();
@@ -42,48 +38,33 @@ export class BuilderInsert extends Builder {
     return this;
   }
 
-  public orClause(clause: OrClause) {
-    this.orClauseValue = clause;
-
-    return this;
-  }
-
   public returning(...expressions: Expression[]) {
     return this.internalReturning(...expressions);
   }
 
   public override getOperations() {
-    const operations: Operation[] = ["INSERT "];
+    const operations: Operation[] = [
+      "INSERT INTO ",
+      ...joinOperations(this.tablesOperations, ", ", false),
+      " ",
+      ...joinOperations(this.columnsOperations, ", ", true),
+      " ",
+    ];
 
-    if (this.orClauseValue !== undefined) {
-      operations.push("OR ", this.orClauseValue, " ");
-    }
-
-    operations.push("INTO ");
-
-    if (this.tablesOperations.length > 0) {
+    if (this.valuesOperations.length > 0) {
       operations.push(
-        ...joinOperations(this.tablesOperations, ", ", false),
-        " ",
-        ...joinOperations(this.columnsOperations, ", ", true),
+        "VALUES ",
+        ...joinOperations(
+          this.valuesOperations.flatMap((values) => [joinOperations(values, ", ", true)]),
+          ", ",
+          false,
+        ),
         " ",
       );
+    }
 
-      if (this.valuesOperations.length > 0) {
-        operations.push(
-          "VALUES ",
-          ...joinOperations(
-            this.valuesOperations.flatMap((values) => [joinOperations(values, ", ", true)]),
-            ", ",
-            false,
-          ),
-          " ",
-        );
-      }
-
-      for (const onConflictBuilder of this.onConflictBuilders) {
-        operations.push(...onConflictBuilder.getOperations());
-      }
+    for (const onConflictBuilder of this.onConflictBuilders) {
+      operations.push(...onConflictBuilder.getOperations());
     }
 
     this.generateWhereOperation(operations);

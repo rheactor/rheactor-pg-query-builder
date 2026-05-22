@@ -1,7 +1,7 @@
 {
   "name": "@rheactor/rheactor-query-builder",
   "version": "1.0.0",
-  "description": "Rheactor Query Builder for SQLite.",
+  "description": "Rheactor Query Builder for PostgreSQL.",
   "license": "MIT",
   "files": [
     "dist"
@@ -20,7 +20,6 @@
     "oxfmt:fix": "oxfmt --write ./src ./tests",
     "eslint": "eslint ./src ./tests",
     "eslint:fix": "eslint --fix ./src ./tests",
-    "tsc": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"

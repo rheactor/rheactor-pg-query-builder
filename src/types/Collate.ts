@@ -1,1 +1,1 @@
-export type Collate = "BINARY" | "NOCASE" | "RTRIM";
+export type Collate = string;

@@ -32,9 +32,9 @@ export function operation(expression: Expression): Operation[] {
       return [...operation(table!), ".", ...operation(column! || "*")];
     }
 
-    const identifier = expression.replaceAll(/[\\`]/g, "");
+    const identifier = expression.replaceAll(/["\\`]/g, "");
 
-    return [`\`${identifier}\``];
+    return [`"${identifier}"`];
   }
 
   if (expression instanceof Builder) {
@@ -62,7 +62,7 @@ export function operation(expression: Expression): Operation[] {
     }
 
     case "EXCLUDED": {
-      return ["`excluded`.", ...operation(expression.identifier)];
+      return ['"EXCLUDED".', ...operation(expression.identifier)];
     }
 
     case "AND":
@@ -71,11 +71,7 @@ export function operation(expression: Expression): Operation[] {
 
       for (const alternative of expression.expressions) {
         if (!isFalseable(alternative)) {
-          const alternativeOperation = operation(alternative);
-
-          if (!isFalseable(alternativeOperation)) {
-            operations.push(alternativeOperation);
-          }
+          operations.push(operation(alternative));
         }
       }
 
@@ -115,8 +111,7 @@ export function operation(expression: Expression): Operation[] {
       return [...operation(expression.identifier), " IS NULL"];
     }
 
-    case "LIKE":
-    case "MATCH": {
+    case "LIKE": {
       return [
         ...operation(expression.identifier),
         " ",
