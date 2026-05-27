@@ -907,14 +907,14 @@ describe("class Builder", () => {
       ["{a,b}"],
     ],
     [
-      sql.select().where(sql.contains("data", sql.jsonValue({ a: 1 }))),
+      sql.select().where(sql.contains("data", sql.jsonValue({ abc: 1 }))),
       'SELECT TRUE WHERE "data" @> $1',
-      ['{"a":1}'],
+      ['{"abc":1}'],
     ],
     [
-      sql.select().where(sql.containedBy(sql.jsonValue({ a: 1 }), "data")),
+      sql.select().where(sql.containedBy(sql.jsonValue({ abc: 1 }), "data")),
       'SELECT TRUE WHERE $1 <@ "data"',
-      ['{"a":1}'],
+      ['{"abc":1}'],
     ],
     [
       sql

@@ -3,6 +3,7 @@ import type { Value } from "./types/Value.js";
 import type { Expression } from "./types/Expression";
 import type { Falseable } from "./types/Falseable";
 import type { Identifier } from "./types/Identifier";
+import type { SampleMethod } from "./types/SampleMethod";
 export declare abstract class Builder {
     protected readonly columnsOperations: Operation[][];
     protected readonly tablesOperations: Operation[][];
@@ -20,10 +21,16 @@ export declare abstract class Builder {
     };
     join(table: Identifier, alias: Identifier, ...conditions: Expression[]): this;
     joinLeft(table: Identifier, alias: Identifier, ...conditions: Expression[]): this;
+    joinLateral(query: Builder, alias: Identifier, ...conditions: Expression[]): this;
+    joinLeftLateral(query: Builder, alias: Identifier, ...conditions: Expression[]): this;
+    joinRight(table: Identifier, alias: Identifier, ...conditions: Expression[]): this;
+    joinFullOuter(table: Identifier, alias: Identifier, ...conditions: Expression[]): this;
+    joinCross(table: Identifier, alias: Identifier): this;
     protected internalColumn(...columns: Array<Falseable<Expression>>): this;
     protected internalColumnAliased(identifier: Falseable<Expression>, alias?: Identifier): this;
     protected internalTable(...tables: Array<Falseable<Identifier>>): this;
     protected internalTableAliased(table: Falseable<Expression>, alias?: Identifier): this;
+    protected internalTableSampled(table: Identifier, method: SampleMethod, percentage: number, alias?: Identifier): this;
     protected internalExpressions(target: Expression[], ...expressions: Array<Falseable<Expression>>): this;
     protected internalWhere(...expressions: Array<Falseable<Expression>>): this;
     protected internalLimit(limit: Falseable<Expression> | number, offset?: Falseable<Expression> | number): this;

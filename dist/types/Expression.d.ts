@@ -6,8 +6,11 @@ import type { Identifier } from "./Identifier.js";
 import type { JsonValue } from "./JsonValue.js";
 import type { Value } from "./Value.js";
 import type { ValueExtended } from "./ValueExtended.js";
-export type MathOperator = "-" | "*" | "**" | "/" | "%" | "+";
-type ComparisonOperator = "!=" | "<" | "<=" | "=" | ">" | ">=";
+export type MathOperator = "-" | "*" | "/" | "%" | "^" | "+";
+export type ComparisonOperator = "!=" | "<" | "<=" | "=" | ">" | ">=";
+type JsonOperator = "->" | "->>" | "?" | "?&" | "?|" | "#>" | "#>>";
+type ContainmentOperator = "@>" | "<@";
+type ArrayConcatOperator = "&&" | "||";
 type LogicalOperator = "AND" | "OR";
 export type Expression = Builder | Identifier | {
     type: "BETWEEN";
@@ -15,7 +18,7 @@ export type Expression = Builder | Identifier | {
     from: Expression;
     to: Expression;
 } | {
-    type: "LIKE" | "MATCH" | "SET";
+    type: "ILIKE" | "LIKE" | "SET";
     identifier: Identifier;
     expression: Expression;
 } | {
@@ -27,6 +30,11 @@ export type Expression = Builder | Identifier | {
     type: LogicalOperator;
     expressions: Array<Falseable<Expression>>;
     includeParens?: boolean;
+} | {
+    type: "ALL" | "ANY";
+    operator: ComparisonOperator;
+    sideA: Expression;
+    sideB: Expression;
 } | {
     type: "CALL";
     identifier: Identifier;
@@ -72,7 +80,19 @@ export type Expression = Builder | Identifier | {
     type: "VALUE";
     argument: Value;
 } | {
+    type: ArrayConcatOperator;
+    sideA: Expression;
+    sideB: Expression;
+} | {
     type: ComparisonOperator;
+    sideA: Expression;
+    sideB: Expression;
+} | {
+    type: ContainmentOperator;
+    sideA: Expression;
+    sideB: Expression;
+} | {
+    type: JsonOperator;
     sideA: Expression;
     sideB: Expression;
 };
