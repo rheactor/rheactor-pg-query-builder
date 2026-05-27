@@ -70,6 +70,18 @@ export abstract class Builder {
     return this;
   }
 
+  public joinLateral(query: Builder, alias: Identifier, ...conditions: Expression[]) {
+    this.joins.push({ type: "INNER", table: query, alias, conditions, lateral: true });
+
+    return this;
+  }
+
+  public joinLeftLateral(query: Builder, alias: Identifier, ...conditions: Expression[]) {
+    this.joins.push({ type: "LEFT", table: query, alias, conditions, lateral: true });
+
+    return this;
+  }
+
   protected internalColumn(...columns: Array<Falseable<Expression>>) {
     for (const column of columns) {
       this.internalColumnAliased(column);
@@ -164,15 +176,20 @@ export abstract class Builder {
 
   protected generateJoinOperations(operations: Operation[]) {
     for (const join of this.joins) {
-      operations.push(
-        `${join.type} JOIN `,
-        ...operation({
-          type: "IDENTIFIER",
-          identifier: join.table,
-          alias: join.alias,
-        }),
-        " ",
-      );
+      operations.push(join.lateral === true ? `${join.type} JOIN LATERAL ` : `${join.type} JOIN `);
+
+      if (join.table instanceof Builder) {
+        operations.push("( ", ...operation(join.table), ") AS ", ...operation(join.alias), " ");
+      } else {
+        operations.push(
+          ...operation({
+            type: "IDENTIFIER",
+            identifier: join.table,
+            alias: join.alias,
+          }),
+          " ",
+        );
+      }
 
       if (join.conditions.length > 0) {
         operations.push("ON ", ...operation({ type: "AND", expressions: join.conditions }), " ");

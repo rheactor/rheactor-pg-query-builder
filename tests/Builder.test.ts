@@ -372,21 +372,19 @@ describe("class Builder", () => {
       [123, 456],
     ],
     [
-      sql
-        .insert("archive", ["id", "name"])
-        .select(sql.select("id", "name").from("users").where(sql.eq("active", sql.value(false)))),
+      sql.insert("archive", ["id", "name"]).select(
+        sql
+          .select("id", "name")
+          .from("users")
+          .where(sql.eq("active", sql.value(false))),
+      ),
       'INSERT INTO "archive" ("id", "name") SELECT "id", "name" FROM "users" WHERE "active" = $1',
       [0],
     ],
     [
       sql
         .insert("stats", ["user_id", "count"])
-        .select(
-          sql
-            .select("user_id", sql.call("COUNT", "*"))
-            .from("orders")
-            .groupBy("user_id"),
-        ),
+        .select(sql.select("user_id", sql.call("COUNT", "*")).from("orders").groupBy("user_id")),
       'INSERT INTO "stats" ("user_id", "count") SELECT "user_id", COUNT(*) FROM "orders" GROUP BY "user_id"',
       [],
     ],
@@ -638,6 +636,56 @@ describe("class Builder", () => {
       [0, "deleted"],
     ],
     [
+      sql
+        .select("u.id", "u.name", "latest_order.total")
+        .fromAliased("users", "u")
+        .joinLateral(
+          sql
+            .select("o.total")
+            .fromAliased("orders", "o")
+            .where(sql.eq("o.user_id", "u.id"))
+            .orderBy("o.created_at", "DESC")
+            .limit(1),
+          "latest_order",
+          sql.raw("true"),
+        ),
+      'SELECT "u"."id", "u"."name", "latest_order"."total" FROM "users" AS "u" INNER JOIN LATERAL ( SELECT "o"."total" FROM "orders" AS "o" WHERE "o"."user_id" = "u"."id" ORDER BY "o"."created_at" DESC LIMIT 1 ) AS "latest_order" ON true',
+      [],
+    ],
+    [
+      sql
+        .select("u.id", "u.name", "latest_order.total")
+        .fromAliased("users", "u")
+        .joinLeftLateral(
+          sql
+            .select("o.total")
+            .fromAliased("orders", "o")
+            .where(sql.eq("o.user_id", "u.id"))
+            .orderBy("o.created_at", "DESC")
+            .limit(1),
+          "latest_order",
+          sql.raw("true"),
+        ),
+      'SELECT "u"."id", "u"."name", "latest_order"."total" FROM "users" AS "u" LEFT JOIN LATERAL ( SELECT "o"."total" FROM "orders" AS "o" WHERE "o"."user_id" = "u"."id" ORDER BY "o"."created_at" DESC LIMIT 1 ) AS "latest_order" ON true',
+      [],
+    ],
+    [
+      sql
+        .select("u.name", "agg.order_count")
+        .fromAliased("users", "u")
+        .joinLateral(
+          sql
+            .select()
+            .selectAliased(sql.call("COUNT", "*"), "order_count")
+            .fromAliased("orders", "o")
+            .where(sql.eq("o.user_id", "u.id")),
+          "agg",
+          sql.raw("true"),
+        ),
+      'SELECT "u"."name", "agg"."order_count" FROM "users" AS "u" INNER JOIN LATERAL ( SELECT COUNT(*) AS "order_count" FROM "orders" AS "o" WHERE "o"."user_id" = "u"."id" ) AS "agg" ON true',
+      [],
+    ],
+    [
       sql.union(sql.select("id", "name").from("users"), sql.select("id", "name").from("admins")),
       'SELECT "id", "name" FROM "users" UNION SELECT "id", "name" FROM "admins"',
       [],
@@ -791,21 +839,9 @@ describe("class Builder", () => {
     ],
 
     // JSON operators
-    [
-      sql.select(sql.jsonGet("data", sql.value("name"))),
-      "SELECT \"data\" -> $1",
-      ["name"],
-    ],
-    [
-      sql.select(sql.jsonGetText("data", sql.value("name"))),
-      "SELECT \"data\" ->> $1",
-      ["name"],
-    ],
-    [
-      sql.select(sql.jsonGetPath("data", sql.staticValue("{a,b}"))),
-      'SELECT "data" #> "{a,b}"',
-      [],
-    ],
+    [sql.select(sql.jsonGet("data", sql.value("name"))), 'SELECT "data" -> $1', ["name"]],
+    [sql.select(sql.jsonGetText("data", sql.value("name"))), 'SELECT "data" ->> $1', ["name"]],
+    [sql.select(sql.jsonGetPath("data", sql.staticValue("{a,b}"))), 'SELECT "data" #> "{a,b}"', []],
     [
       sql.select(sql.jsonGetPathText("data", sql.staticValue("{a,b}"))),
       'SELECT "data" #>> "{a,b}"',
@@ -896,9 +932,15 @@ describe("class Builder", () => {
       [],
     ],
     [
-      sql
-        .select()
-        .where(sql.any("id", sql.select("id").from("active_users").where(sql.eq("status", sql.value("active"))))),
+      sql.select().where(
+        sql.any(
+          "id",
+          sql
+            .select("id")
+            .from("active_users")
+            .where(sql.eq("status", sql.value("active"))),
+        ),
+      ),
       'SELECT TRUE WHERE "id" = ANY (SELECT "id" FROM "active_users" WHERE "status" = $1 )',
       ["active"],
     ],
