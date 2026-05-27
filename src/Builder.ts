@@ -5,6 +5,7 @@ import type { Expression } from "@/types/Expression";
 import type { Falseable } from "@/types/Falseable";
 import type { Identifier } from "@/types/Identifier";
 import type { JoinClause } from "@/types/Join";
+import type { SampleMethod } from "@/types/SampleMethod";
 
 import { isFalseable } from "@/services/FalseableService";
 import { joinOperations, operation } from "@/services/OperationService";
@@ -128,6 +129,21 @@ export abstract class Builder {
     if (!isFalseable(table)) {
       this.tablesOperations.push(operation({ type: "IDENTIFIER", identifier: table, alias }));
     }
+
+    return this;
+  }
+
+  protected internalTableSampled(
+    table: Identifier,
+    method: SampleMethod,
+    percentage: number,
+    alias?: Identifier,
+  ) {
+    const tableOps = operation({ type: "IDENTIFIER", identifier: table, alias });
+
+    tableOps.push(` TABLESAMPLE ${method}(${percentage})`);
+
+    this.tablesOperations.push(tableOps);
 
     return this;
   }

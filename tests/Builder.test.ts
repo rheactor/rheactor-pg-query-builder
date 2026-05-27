@@ -50,6 +50,29 @@ describe("class Builder", () => {
       'SELECT TRUE FROM "test1" AS "test2", $1 AS "test2"',
       [123],
     ],
+    [
+      sql.select().fromSampled("users", "BERNOULLI", 10),
+      'SELECT TRUE FROM "users" TABLESAMPLE BERNOULLI(10)',
+      [],
+    ],
+    [
+      sql.select().fromSampled("users", "SYSTEM", 5),
+      'SELECT TRUE FROM "users" TABLESAMPLE SYSTEM(5)',
+      [],
+    ],
+    [
+      sql.select().fromSampledAliased("users", "u", "BERNOULLI", 25),
+      'SELECT TRUE FROM "users" AS "u" TABLESAMPLE BERNOULLI(25)',
+      [],
+    ],
+    [
+      sql
+        .select("id", "name")
+        .fromSampled("users", "BERNOULLI", 10)
+        .where(sql.eq("active", sql.value(true))),
+      'SELECT "id", "name" FROM "users" TABLESAMPLE BERNOULLI(10) WHERE "active" = $1',
+      [1],
+    ],
     [sql.select().limit(10), "SELECT TRUE LIMIT 10", []],
     [sql.select().limit(false), "SELECT TRUE", []],
 
