@@ -675,10 +675,7 @@ describe("class Builder", () => {
       [],
     ],
     [
-      sql
-        .select("u.name", "s.name")
-        .fromAliased("users", "u")
-        .joinCross("settings", "s"),
+      sql.select("u.name", "s.name").fromAliased("users", "u").joinCross("settings", "s"),
       'SELECT "u"."name", "s"."name" FROM "users" AS "u" CROSS JOIN "settings" AS "s"',
       [],
     ],
@@ -959,29 +956,45 @@ describe("class Builder", () => {
 
     // ANY / ALL
     [
-      sql.select().where(sql.any("id", sql.select("id").from("users"))),
+      sql.select().where(sql.any("id", "=", sql.select("id").from("users"))),
       'SELECT TRUE WHERE "id" = ANY (SELECT "id" FROM "users" )',
       [],
     ],
     [
-      sql.select().where(sql.any("id", sql.raw("ARRAY[1,2,3]"))),
+      sql.select().where(sql.any("id", "=", sql.raw("ARRAY[1,2,3]"))),
       'SELECT TRUE WHERE "id" = ANY ARRAY[1,2,3]',
       [],
     ],
     [
-      sql.select().where(sql.all("id", sql.select("id").from("users"))),
+      sql.select().where(sql.all("id", "=", sql.select("id").from("users"))),
       'SELECT TRUE WHERE "id" = ALL (SELECT "id" FROM "users" )',
       [],
     ],
     [
-      sql.select().where(sql.all("id", sql.raw("ARRAY[1,2,3]"))),
+      sql.select().where(sql.all("id", "=", sql.raw("ARRAY[1,2,3]"))),
       'SELECT TRUE WHERE "id" = ALL ARRAY[1,2,3]',
+      [],
+    ],
+    [
+      sql.select().where(sql.any("id", ">", sql.select("id").from("users"))),
+      'SELECT TRUE WHERE "id" > ANY (SELECT "id" FROM "users" )',
+      [],
+    ],
+    [
+      sql.select().where(sql.all("score", ">=", sql.raw("ARRAY[100,200]"))),
+      'SELECT TRUE WHERE "score" >= ALL ARRAY[100,200]',
+      [],
+    ],
+    [
+      sql.select().where(sql.any("id", "!=", sql.select("id").from("users"))),
+      'SELECT TRUE WHERE "id" != ANY (SELECT "id" FROM "users" )',
       [],
     ],
     [
       sql.select().where(
         sql.any(
           "id",
+          "=",
           sql
             .select("id")
             .from("active_users")
@@ -996,8 +1009,8 @@ describe("class Builder", () => {
         .select()
         .where(
           sql.and(
-            sql.any("id", sql.select("id").from("users")),
-            sql.all("score", sql.raw("ARRAY[100,200]")),
+            sql.any("id", "=", sql.select("id").from("users")),
+            sql.all("score", "=", sql.raw("ARRAY[100,200]")),
           ),
         ),
       'SELECT TRUE WHERE ("id" = ANY (SELECT "id" FROM "users" ) AND "score" = ALL ARRAY[100,200])',

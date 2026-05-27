@@ -1,7 +1,7 @@
 import type { Builder } from "@/Builder.js";
 import type { Cast } from "@/types/Cast.js";
 import type { Collate } from "@/types/Collate.js";
-import type { Expression, MathOperator } from "@/types/Expression.js";
+import type { ComparisonOperator, Expression, MathOperator } from "@/types/Expression.js";
 import type { Falseable } from "@/types/Falseable.js";
 import type { Identifier } from "@/types/Identifier.js";
 import type { JsonValue } from "@/types/JsonValue.js";
@@ -22,12 +22,12 @@ const functions = {
     return { type: "AND", expressions };
   },
 
-  all(sideA: Expression, sideB: Expression): Expression {
-    return { type: "ALL", sideA, sideB };
+  all(sideA: Expression, operator: ComparisonOperator, sideB: Expression): Expression {
+    return { type: "ALL", operator, sideA, sideB };
   },
 
-  any(sideA: Expression, sideB: Expression): Expression {
-    return { type: "ANY", sideA, sideB };
+  any(sideA: Expression, operator: ComparisonOperator, sideB: Expression): Expression {
+    return { type: "ANY", operator, sideA, sideB };
   },
 
   arrayOverlap(sideA: Expression, sideB: Expression): Expression {

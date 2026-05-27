@@ -9,7 +9,7 @@ import type { ValueExtended } from "@/types/ValueExtended.js";
 
 export type MathOperator = "-" | "*" | "/" | "%" | "^" | "+";
 
-type ComparisonOperator = "!=" | "<" | "<=" | "=" | ">" | ">=";
+export type ComparisonOperator = "!=" | "<" | "<=" | "=" | ">" | ">=";
 
 type JsonOperator = "->" | "->>" | "?" | "?&" | "?|" | "#>" | "#>>";
 
@@ -44,7 +44,7 @@ export type Expression =
       expressions: Array<Falseable<Expression>>;
       includeParens?: boolean;
     }
-  | { type: "ALL" | "ANY"; sideA: Expression; sideB: Expression }
+  | { type: "ALL" | "ANY"; operator: ComparisonOperator; sideA: Expression; sideB: Expression }
   | { type: "CALL"; identifier: Identifier; functionArguments: Expression[] }
   | { type: "CAST"; expression: Expression; cast: Cast }
   | { type: "COLLATE"; expression: Expression; collate: Collate }

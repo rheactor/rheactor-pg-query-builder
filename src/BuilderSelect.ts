@@ -3,6 +3,7 @@ import type { Operation } from "@/types/Operation.js";
 
 import type { Expression } from "@/types/Expression";
 import type { Falseable } from "@/types/Falseable";
+import type { Identifier } from "@/types/Identifier";
 import type { SampleMethod } from "@/types/SampleMethod";
 
 import { Builder } from "@/Builder";
@@ -47,11 +48,16 @@ export class BuilderSelect extends Builder {
     return this.internalTableAliased(...args);
   }
 
-  public fromSampled(table: string, method: SampleMethod, percentage: number) {
+  public fromSampled(table: Identifier, method: SampleMethod, percentage: number) {
     return this.internalTableSampled(table, method, percentage);
   }
 
-  public fromSampledAliased(table: string, alias: string, method: SampleMethod, percentage: number) {
+  public fromSampledAliased(
+    table: Identifier,
+    alias: Identifier,
+    method: SampleMethod,
+    percentage: number,
+  ) {
     return this.internalTableSampled(table, method, percentage, alias);
   }
 

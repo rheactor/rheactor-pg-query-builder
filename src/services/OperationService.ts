@@ -73,7 +73,7 @@ export function operation(expression: Expression): Operation[] {
 
       return [
         ...operation(expression.sideA),
-        ` = ${expression.type} `,
+        ` ${expression.operator} ${expression.type} `,
         ...(isSubquery ? ["(", ...sideBOperations, ")"] : sideBOperations),
       ];
     }
