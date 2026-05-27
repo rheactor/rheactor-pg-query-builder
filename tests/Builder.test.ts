@@ -750,6 +750,154 @@ describe("class Builder", () => {
       'DELETE FROM "test" WHERE "id" = $1 RETURNING LOWER("name")',
       [1],
     ],
+
+    // ILIKE
+    [
+      sql.select().where(sql.ilike("name", sql.value("%john%"))),
+      'SELECT TRUE WHERE "name" ILIKE $1',
+      ["%john%"],
+    ],
+    [
+      sql.select().where(sql.not(sql.ilike("name", sql.value("%john%")))),
+      'SELECT TRUE WHERE NOT "name" ILIKE $1',
+      ["%john%"],
+    ],
+
+    // JSON operators
+    [
+      sql.select(sql.jsonGet("data", sql.value("name"))),
+      "SELECT \"data\" -> $1",
+      ["name"],
+    ],
+    [
+      sql.select(sql.jsonGetText("data", sql.value("name"))),
+      "SELECT \"data\" ->> $1",
+      ["name"],
+    ],
+    [
+      sql.select(sql.jsonGetPath("data", sql.staticValue("{a,b}"))),
+      'SELECT "data" #> "{a,b}"',
+      [],
+    ],
+    [
+      sql.select(sql.jsonGetPathText("data", sql.staticValue("{a,b}"))),
+      'SELECT "data" #>> "{a,b}"',
+      [],
+    ],
+    [
+      sql.select().where(sql.jsonExists("data", sql.value("name"))),
+      'SELECT TRUE WHERE "data" ? $1',
+      ["name"],
+    ],
+    [
+      sql.select().where(sql.jsonExistsAny("data", sql.value("{a,b}"))),
+      'SELECT TRUE WHERE "data" ?| $1',
+      ["{a,b}"],
+    ],
+    [
+      sql.select().where(sql.jsonExistsAll("data", sql.value("{a,b}"))),
+      'SELECT TRUE WHERE "data" ?& $1',
+      ["{a,b}"],
+    ],
+    [
+      sql.select().where(sql.contains("data", sql.jsonValue({ a: 1 }))),
+      'SELECT TRUE WHERE "data" @> $1',
+      ['{"a":1}'],
+    ],
+    [
+      sql.select().where(sql.containedBy(sql.jsonValue({ a: 1 }), "data")),
+      'SELECT TRUE WHERE $1 <@ "data"',
+      ['{"a":1}'],
+    ],
+    [
+      sql
+        .select()
+        .where(
+          sql.jsonGetText("data", sql.value("name")),
+          sql.gt(sql.jsonGetText("data", sql.value("age")), sql.value(18)),
+        ),
+      'SELECT TRUE WHERE "data" ->> $1 AND "data" ->> $2 > $3',
+      ["name", "age", 18],
+    ],
+
+    // Array operators
+    [
+      sql.select().where(sql.contains(sql.raw("ARRAY[1,2,3]"), sql.raw("ARRAY[2]"))),
+      "SELECT TRUE WHERE ARRAY[1,2,3] @> ARRAY[2]",
+      [],
+    ],
+    [
+      sql.select().where(sql.containedBy(sql.raw("ARRAY[2]"), sql.raw("ARRAY[1,2,3]"))),
+      "SELECT TRUE WHERE ARRAY[2] <@ ARRAY[1,2,3]",
+      [],
+    ],
+    [
+      sql.select().where(sql.arrayOverlap(sql.raw("ARRAY[1,2]"), sql.raw("ARRAY[2,3]"))),
+      "SELECT TRUE WHERE ARRAY[1,2] && ARRAY[2,3]",
+      [],
+    ],
+    [
+      sql.select(sql.concatOp(sql.value("hello"), sql.value("world"))),
+      "SELECT $1 || $2",
+      ["hello", "world"],
+    ],
+    [
+      sql.select(sql.concatOp(sql.raw("ARRAY[1,2]"), sql.raw("ARRAY[3,4]"))),
+      "SELECT ARRAY[1,2] || ARRAY[3,4]",
+      [],
+    ],
+
+    // ANY / ALL
+    [
+      sql.select().where(sql.any("id", sql.select("id").from("users"))),
+      'SELECT TRUE WHERE "id" = ANY (SELECT "id" FROM "users" )',
+      [],
+    ],
+    [
+      sql.select().where(sql.any("id", sql.raw("ARRAY[1,2,3]"))),
+      'SELECT TRUE WHERE "id" = ANY ARRAY[1,2,3]',
+      [],
+    ],
+    [
+      sql.select().where(sql.all("id", sql.select("id").from("users"))),
+      'SELECT TRUE WHERE "id" = ALL (SELECT "id" FROM "users" )',
+      [],
+    ],
+    [
+      sql.select().where(sql.all("id", sql.raw("ARRAY[1,2,3]"))),
+      'SELECT TRUE WHERE "id" = ALL ARRAY[1,2,3]',
+      [],
+    ],
+    [
+      sql
+        .select()
+        .where(sql.any("id", sql.select("id").from("active_users").where(sql.eq("status", sql.value("active"))))),
+      'SELECT TRUE WHERE "id" = ANY (SELECT "id" FROM "active_users" WHERE "status" = $1 )',
+      ["active"],
+    ],
+    [
+      sql
+        .select()
+        .where(
+          sql.and(
+            sql.any("id", sql.select("id").from("users")),
+            sql.all("score", sql.raw("ARRAY[100,200]")),
+          ),
+        ),
+      'SELECT TRUE WHERE ("id" = ANY (SELECT "id" FROM "users" ) AND "score" = ALL ARRAY[100,200])',
+      [],
+    ],
+
+    // Combined: JSON + WHERE + ILIKE
+    [
+      sql
+        .select("id", "name")
+        .from("users")
+        .where(sql.ilike("name", sql.value("%john%")))
+        .where(sql.jsonExists("metadata", sql.value("phone"))),
+      'SELECT "id", "name" FROM "users" WHERE "name" ILIKE $1 AND "metadata" ? $2',
+      ["%john%", "phone"],
+    ],
   ];
 
   it.each(tests)("[#%#]%c %s (%j)", (builder, expectedQuery, expectedParameters) => {

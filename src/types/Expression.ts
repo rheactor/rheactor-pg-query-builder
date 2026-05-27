@@ -11,44 +11,31 @@ export type MathOperator = "-" | "*" | "/" | "%" | "^" | "+";
 
 type ComparisonOperator = "!=" | "<" | "<=" | "=" | ">" | ">=";
 
+type JsonOperator = "->" | "->>" | "?" | "?&" | "?|" | "#>" | "#>>";
+
+type ContainmentOperator = "@>" | "<@";
+
+type ArrayConcatOperator = "&&" | "||";
+
 type LogicalOperator = "AND" | "OR";
 
 export type Expression =
-  | Builder
-  | Identifier
-  | {
+  Builder | Identifier | {
       type: "BETWEEN";
       identifier: Identifier;
       from: Expression;
       to: Expression;
-    }
-  | {
-      type: "LIKE" | "SET";
+    } | {
+      type: "ILIKE" | "LIKE" | "SET";
       identifier: Identifier;
       expression: Expression;
-    }
-  | {
+    } | {
       type: "OPERATOR";
       operator: MathOperator;
       expressionA: Expression;
       expressionB: Expression;
-    }
-  | {
+    } | {
       type: LogicalOperator;
       expressions: Array<Falseable<Expression>>;
       includeParens?: boolean;
-    }
-  | { type: "CALL"; identifier: Identifier; functionArguments: Expression[] }
-  | { type: "CAST"; expression: Expression; cast: Cast }
-  | { type: "COLLATE"; expression: Expression; collate: Collate }
-  | { type: "EXCLUDED"; identifier: Identifier }
-  | { type: "EXISTS"; builder: Builder }
-  | { type: "IDENTIFIER"; identifier: Expression; alias?: Identifier }
-  | { type: "IN"; identifier: Identifier; values: Expression[] }
-  | { type: "IS NULL"; identifier: Identifier }
-  | { type: "JSON"; argument: JsonValue }
-  | { type: "NOT"; expression: Expression }
-  | { type: "RAW"; expression: string }
-  | { type: "STATIC"; argument: ValueExtended }
-  | { type: "VALUE"; argument: Value }
-  | { type: ComparisonOperator; sideA: Expression; sideB: Expression };
+    } | { type: "ALL" | "ANY"; sideA: Expression; sideB: Expression } | { type: "CALL"; identifier: Identifier; functionArguments: Expression[] } | { type: "CAST"; expression: Expression; cast: Cast } | { type: "COLLATE"; expression: Expression; collate: Collate } | { type: "EXCLUDED"; identifier: Identifier } | { type: "EXISTS"; builder: Builder } | { type: "IDENTIFIER"; identifier: Expression; alias?: Identifier } | { type: "IN"; identifier: Identifier; values: Expression[] } | { type: "IS NULL"; identifier: Identifier } | { type: "JSON"; argument: JsonValue } | { type: "NOT"; expression: Expression } | { type: "RAW"; expression: string } | { type: "STATIC"; argument: ValueExtended } | { type: "VALUE"; argument: Value } | { type: ArrayConcatOperator; sideA: Expression; sideB: Expression } | { type: ComparisonOperator; sideA: Expression; sideB: Expression } | { type: ContainmentOperator; sideA: Expression; sideB: Expression } | { type: JsonOperator; sideA: Expression; sideB: Expression };

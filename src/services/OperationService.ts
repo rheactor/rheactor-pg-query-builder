@@ -47,11 +47,34 @@ export function operation(expression: Expression): Operation[] {
     case ">":
     case ">=":
     case "<":
-    case "<=": {
+    case "<=":
+    case "->":
+    case "->>":
+    case "#>":
+    case "#>>":
+    case "?":
+    case "?|":
+    case "?&":
+    case "@>":
+    case "<@":
+    case "&&":
+    case "||": {
       return [
         ...operation(expression.sideA),
         ` ${expression.type} `,
         ...operation(expression.sideB),
+      ];
+    }
+
+    case "ANY":
+    case "ALL": {
+      const sideBOperations = operation(expression.sideB);
+      const isSubquery = expression.sideB instanceof Builder;
+
+      return [
+        ...operation(expression.sideA),
+        ` = ${expression.type} `,
+        ...(isSubquery ? ["(", ...sideBOperations, ")"] : sideBOperations),
       ];
     }
 
@@ -111,7 +134,8 @@ export function operation(expression: Expression): Operation[] {
       return [...operation(expression.identifier), " IS NULL"];
     }
 
-    case "LIKE": {
+    case "LIKE":
+    case "ILIKE": {
       return [
         ...operation(expression.identifier),
         " ",

@@ -22,6 +22,18 @@ const functions = {
     return { type: "AND", expressions };
   },
 
+  all(sideA: Expression, sideB: Expression): Expression {
+    return { type: "ALL", sideA, sideB };
+  },
+
+  any(sideA: Expression, sideB: Expression): Expression {
+    return { type: "ANY", sideA, sideB };
+  },
+
+  arrayOverlap(sideA: Expression, sideB: Expression): Expression {
+    return { type: "&&", sideA, sideB };
+  },
+
   between(identifier: Identifier, from: Expression, to: Expression): Expression {
     return { type: "BETWEEN", identifier, from, to };
   },
@@ -38,6 +50,18 @@ const functions = {
 
   collate(expression: Expression, collateType: Collate = "C"): Expression {
     return { type: "COLLATE", expression, collate: collateType };
+  },
+
+  concatOp(sideA: Expression, sideB: Expression): Expression {
+    return { type: "||", sideA, sideB };
+  },
+
+  containedBy(sideA: Expression, sideB: Expression): Expression {
+    return { type: "<@", sideA, sideB };
+  },
+
+  contains(sideA: Expression, sideB: Expression): Expression {
+    return { type: "@>", sideA, sideB };
   },
 
   customCall,
@@ -70,6 +94,10 @@ const functions = {
     return { type: "IN", identifier, values };
   },
 
+  ilike(identifier: Identifier, pattern: Expression): Expression {
+    return { type: "ILIKE", identifier, expression: pattern };
+  },
+
   insert(table: Identifier, columns: Identifier[]) {
     return new BuilderInsert(table, columns);
   },
@@ -89,6 +117,34 @@ const functions = {
       type: "STATIC",
       argument: nullAsSQL && argument === null ? null : JSON.stringify(argument),
     };
+  },
+
+  jsonExists(sideA: Expression, sideB: Expression): Expression {
+    return { type: "?", sideA, sideB };
+  },
+
+  jsonExistsAll(sideA: Expression, sideB: Expression): Expression {
+    return { type: "?&", sideA, sideB };
+  },
+
+  jsonExistsAny(sideA: Expression, sideB: Expression): Expression {
+    return { type: "?|", sideA, sideB };
+  },
+
+  jsonGet(sideA: Expression, sideB: Expression): Expression {
+    return { type: "->", sideA, sideB };
+  },
+
+  jsonGetPath(sideA: Expression, sideB: Expression): Expression {
+    return { type: "#>", sideA, sideB };
+  },
+
+  jsonGetPathText(sideA: Expression, sideB: Expression): Expression {
+    return { type: "#>>", sideA, sideB };
+  },
+
+  jsonGetText(sideA: Expression, sideB: Expression): Expression {
+    return { type: "->>", sideA, sideB };
   },
 
   like(identifier: Identifier, pattern: Expression): Expression {
