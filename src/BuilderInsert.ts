@@ -11,11 +11,19 @@ import { BuilderConflict } from "@/BuilderConflict";
 export class BuilderInsert extends Builder {
   private readonly onConflictBuilders: BuilderConflict[] = [];
 
+  private selectQuery?: Builder;
+
   public constructor(table: Identifier, columns: Identifier[]) {
     super();
 
     this.internalTable(table);
     this.internalColumn(...columns);
+  }
+
+  public select(query: Builder) {
+    this.selectQuery = query;
+
+    return this;
   }
 
   public values(...values: Expression[]) {
@@ -51,7 +59,9 @@ export class BuilderInsert extends Builder {
       " ",
     ];
 
-    if (this.valuesOperations.length > 0) {
+    if (this.selectQuery !== undefined) {
+      operations.push(...operation(this.selectQuery), " ");
+    } else if (this.valuesOperations.length > 0) {
       operations.push(
         "VALUES ",
         ...joinOperations(
@@ -67,9 +77,6 @@ export class BuilderInsert extends Builder {
       operations.push(...onConflictBuilder.getOperations());
     }
 
-    this.generateWhereOperation(operations);
-    this.generateLimitOperation(operations);
-    this.generateOffsetOperation(operations);
     this.generateReturningOperation(operations);
 
     return operations;

@@ -371,6 +371,33 @@ describe("class Builder", () => {
       'INSERT INTO "test" ("id", "name") VALUES ("index", $1), ("id" = $2, NULL)',
       [123, 456],
     ],
+    [
+      sql
+        .insert("archive", ["id", "name"])
+        .select(sql.select("id", "name").from("users").where(sql.eq("active", sql.value(false)))),
+      'INSERT INTO "archive" ("id", "name") SELECT "id", "name" FROM "users" WHERE "active" = $1',
+      [0],
+    ],
+    [
+      sql
+        .insert("stats", ["user_id", "count"])
+        .select(
+          sql
+            .select("user_id", sql.call("COUNT", "*"))
+            .from("orders")
+            .groupBy("user_id"),
+        ),
+      'INSERT INTO "stats" ("user_id", "count") SELECT "user_id", COUNT(*) FROM "orders" GROUP BY "user_id"',
+      [],
+    ],
+    [
+      sql
+        .insert("backup", ["id", "name", "email"])
+        .select(sql.select("id", "name", "email").from("users"))
+        .returning("id"),
+      'INSERT INTO "backup" ("id", "name", "email") SELECT "id", "name", "email" FROM "users"  RETURNING "id"',
+      [],
+    ],
     [sql.case(), "CASE END", []],
     [sql.case("test"), 'CASE "test" END', []],
     [
