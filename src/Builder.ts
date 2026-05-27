@@ -82,6 +82,24 @@ export abstract class Builder {
     return this;
   }
 
+  public joinRight(table: Identifier, alias: Identifier, ...conditions: Expression[]) {
+    this.joins.push({ type: "RIGHT", table, alias, conditions });
+
+    return this;
+  }
+
+  public joinFullOuter(table: Identifier, alias: Identifier, ...conditions: Expression[]) {
+    this.joins.push({ type: "FULL OUTER", table, alias, conditions });
+
+    return this;
+  }
+
+  public joinCross(table: Identifier, alias: Identifier) {
+    this.joins.push({ type: "CROSS", table, alias, conditions: [] });
+
+    return this;
+  }
+
   protected internalColumn(...columns: Array<Falseable<Expression>>) {
     for (const column of columns) {
       this.internalColumnAliased(column);

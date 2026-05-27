@@ -637,6 +637,30 @@ describe("class Builder", () => {
     ],
     [
       sql
+        .select("u.name", "o.total")
+        .fromAliased("users", "u")
+        .joinRight("orders", "o", sql.eq("o.user_id", "u.id")),
+      'SELECT "u"."name", "o"."total" FROM "users" AS "u" RIGHT JOIN "orders" AS "o" ON "o"."user_id" = "u"."id"',
+      [],
+    ],
+    [
+      sql
+        .select("u.name", "o.total")
+        .fromAliased("users", "u")
+        .joinFullOuter("orders", "o", sql.eq("o.user_id", "u.id")),
+      'SELECT "u"."name", "o"."total" FROM "users" AS "u" FULL OUTER JOIN "orders" AS "o" ON "o"."user_id" = "u"."id"',
+      [],
+    ],
+    [
+      sql
+        .select("u.name", "s.name")
+        .fromAliased("users", "u")
+        .joinCross("settings", "s"),
+      'SELECT "u"."name", "s"."name" FROM "users" AS "u" CROSS JOIN "settings" AS "s"',
+      [],
+    ],
+    [
+      sql
         .select("u.id", "u.name", "latest_order.total")
         .fromAliased("users", "u")
         .joinLateral(
