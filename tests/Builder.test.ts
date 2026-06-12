@@ -161,7 +161,7 @@ describe("class Builder", () => {
     ],
     [
       sql.select().where(sql.in("id", sql.select("id").from("active"))),
-      'SELECT TRUE WHERE "id" IN (SELECT "id" FROM "active" )',
+      'SELECT TRUE WHERE "id" IN (SELECT "id" FROM "active")',
       [],
     ],
     [
@@ -286,7 +286,7 @@ describe("class Builder", () => {
       ["{}", "$[#]", 123],
     ],
     [sql.select().where(sql.customCall("XYZ")), "SELECT TRUE WHERE XYZ()", []],
-    [sql.select().where(sql.exists(sql.select())), "SELECT TRUE WHERE EXISTS ( SELECT TRUE )", []],
+    [sql.select().where(sql.exists(sql.select())), "SELECT TRUE WHERE EXISTS (SELECT TRUE)", []],
     [sql.select().where(sql.staticValue(true)), "SELECT TRUE WHERE TRUE", []],
     [sql.select().where(sql.staticValue(false)), "SELECT TRUE WHERE FALSE", []],
     [sql.select().where(sql.staticValue("")), 'SELECT TRUE WHERE ""', []],
@@ -416,7 +416,7 @@ describe("class Builder", () => {
         .insert("backup", ["id", "name", "email"])
         .select(sql.select("id", "name", "email").from("users"))
         .returning("id"),
-      'INSERT INTO "backup" ("id", "name", "email") SELECT "id", "name", "email" FROM "users"  RETURNING "id"',
+      'INSERT INTO "backup" ("id", "name", "email") SELECT "id", "name", "email" FROM "users" RETURNING "id"',
       [],
     ],
     [sql.case(), "CASE END", []],
@@ -693,7 +693,7 @@ describe("class Builder", () => {
           "latest_order",
           sql.raw("true"),
         ),
-      'SELECT "u"."id", "u"."name", "latest_order"."total" FROM "users" AS "u" INNER JOIN LATERAL ( SELECT "o"."total" FROM "orders" AS "o" WHERE "o"."user_id" = "u"."id" ORDER BY "o"."created_at" DESC LIMIT 1 ) AS "latest_order" ON true',
+      'SELECT "u"."id", "u"."name", "latest_order"."total" FROM "users" AS "u" INNER JOIN LATERAL (SELECT "o"."total" FROM "orders" AS "o" WHERE "o"."user_id" = "u"."id" ORDER BY "o"."created_at" DESC LIMIT 1) AS "latest_order" ON true',
       [],
     ],
     [
@@ -710,7 +710,7 @@ describe("class Builder", () => {
           "latest_order",
           sql.raw("true"),
         ),
-      'SELECT "u"."id", "u"."name", "latest_order"."total" FROM "users" AS "u" LEFT JOIN LATERAL ( SELECT "o"."total" FROM "orders" AS "o" WHERE "o"."user_id" = "u"."id" ORDER BY "o"."created_at" DESC LIMIT 1 ) AS "latest_order" ON true',
+      'SELECT "u"."id", "u"."name", "latest_order"."total" FROM "users" AS "u" LEFT JOIN LATERAL (SELECT "o"."total" FROM "orders" AS "o" WHERE "o"."user_id" = "u"."id" ORDER BY "o"."created_at" DESC LIMIT 1) AS "latest_order" ON true',
       [],
     ],
     [
@@ -726,7 +726,7 @@ describe("class Builder", () => {
           "agg",
           sql.raw("true"),
         ),
-      'SELECT "u"."name", "agg"."order_count" FROM "users" AS "u" INNER JOIN LATERAL ( SELECT COUNT(*) AS "order_count" FROM "orders" AS "o" WHERE "o"."user_id" = "u"."id" ) AS "agg" ON true',
+      'SELECT "u"."name", "agg"."order_count" FROM "users" AS "u" INNER JOIN LATERAL (SELECT COUNT(*) AS "order_count" FROM "orders" AS "o" WHERE "o"."user_id" = "u"."id") AS "agg" ON true',
       [],
     ],
     [
@@ -743,7 +743,7 @@ describe("class Builder", () => {
           sql.select("id", "name").from("buyers"),
         ),
       ),
-      'SELECT "id", "name" FROM "users" UNION ( SELECT "id", "name" FROM "admins" UNION SELECT "id", "name" FROM "sellers" UNION SELECT "id", "name" FROM "buyers" )',
+      'SELECT "id", "name" FROM "users" UNION (SELECT "id", "name" FROM "admins" UNION SELECT "id", "name" FROM "sellers" UNION SELECT "id", "name" FROM "buyers")',
       [],
     ],
     [
@@ -760,7 +760,7 @@ describe("class Builder", () => {
           sql.select("id", "name").from("buyers"),
         ),
       ),
-      'SELECT "id", "name" FROM "users" UNION ALL ( SELECT "id", "name" FROM "admins" UNION ALL SELECT "id", "name" FROM "sellers" UNION ALL SELECT "id", "name" FROM "buyers" )',
+      'SELECT "id", "name" FROM "users" UNION ALL (SELECT "id", "name" FROM "admins" UNION ALL SELECT "id", "name" FROM "sellers" UNION ALL SELECT "id", "name" FROM "buyers")',
       [],
     ],
     [
@@ -780,7 +780,7 @@ describe("class Builder", () => {
           sql.select("id", "name").from("buyers"),
         ),
       ),
-      'SELECT "id", "name" FROM "users" INTERSECT ( SELECT "id", "name" FROM "admins" INTERSECT SELECT "id", "name" FROM "sellers" INTERSECT SELECT "id", "name" FROM "buyers" )',
+      'SELECT "id", "name" FROM "users" INTERSECT (SELECT "id", "name" FROM "admins" INTERSECT SELECT "id", "name" FROM "sellers" INTERSECT SELECT "id", "name" FROM "buyers")',
       [],
     ],
     [
@@ -797,7 +797,7 @@ describe("class Builder", () => {
           sql.select("id", "name").from("buyers"),
         ),
       ),
-      'SELECT "id", "name" FROM "users" EXCEPT ( SELECT "id", "name" FROM "admins" EXCEPT SELECT "id", "name" FROM "sellers" EXCEPT SELECT "id", "name" FROM "buyers" )',
+      'SELECT "id", "name" FROM "users" EXCEPT (SELECT "id", "name" FROM "admins" EXCEPT SELECT "id", "name" FROM "sellers" EXCEPT SELECT "id", "name" FROM "buyers")',
       [],
     ],
 
@@ -957,7 +957,7 @@ describe("class Builder", () => {
     // ANY / ALL
     [
       sql.select().where(sql.any("id", "=", sql.select("id").from("users"))),
-      'SELECT TRUE WHERE "id" = ANY (SELECT "id" FROM "users" )',
+      'SELECT TRUE WHERE "id" = ANY (SELECT "id" FROM "users")',
       [],
     ],
     [
@@ -967,7 +967,7 @@ describe("class Builder", () => {
     ],
     [
       sql.select().where(sql.all("id", "=", sql.select("id").from("users"))),
-      'SELECT TRUE WHERE "id" = ALL (SELECT "id" FROM "users" )',
+      'SELECT TRUE WHERE "id" = ALL (SELECT "id" FROM "users")',
       [],
     ],
     [
@@ -977,7 +977,7 @@ describe("class Builder", () => {
     ],
     [
       sql.select().where(sql.any("id", ">", sql.select("id").from("users"))),
-      'SELECT TRUE WHERE "id" > ANY (SELECT "id" FROM "users" )',
+      'SELECT TRUE WHERE "id" > ANY (SELECT "id" FROM "users")',
       [],
     ],
     [
@@ -987,7 +987,7 @@ describe("class Builder", () => {
     ],
     [
       sql.select().where(sql.any("id", "!=", sql.select("id").from("users"))),
-      'SELECT TRUE WHERE "id" != ANY (SELECT "id" FROM "users" )',
+      'SELECT TRUE WHERE "id" != ANY (SELECT "id" FROM "users")',
       [],
     ],
     [
@@ -1001,7 +1001,7 @@ describe("class Builder", () => {
             .where(sql.eq("status", sql.value("active"))),
         ),
       ),
-      'SELECT TRUE WHERE "id" = ANY (SELECT "id" FROM "active_users" WHERE "status" = $1 )',
+      'SELECT TRUE WHERE "id" = ANY (SELECT "id" FROM "active_users" WHERE "status" = $1)',
       ["active"],
     ],
     [
@@ -1013,7 +1013,7 @@ describe("class Builder", () => {
             sql.all("score", "=", sql.raw("ARRAY[100,200]")),
           ),
         ),
-      'SELECT TRUE WHERE ("id" = ANY (SELECT "id" FROM "users" ) AND "score" = ALL ARRAY[100,200])',
+      'SELECT TRUE WHERE ("id" = ANY (SELECT "id" FROM "users") AND "score" = ALL ARRAY[100,200])',
       [],
     ],
 

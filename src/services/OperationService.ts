@@ -38,7 +38,14 @@ export function operation(expression: Expression): Operation[] {
   }
 
   if (expression instanceof Builder) {
-    return expression.getOperations();
+    const operations = expression.getOperations();
+    const operationsLatest = operations.at(-1);
+
+    if (typeof operationsLatest === "string") {
+      operations[operations.length - 1] = operationsLatest.trimEnd();
+    }
+
+    return operations;
   }
 
   switch (expression.type) {
@@ -199,7 +206,7 @@ export function operation(expression: Expression): Operation[] {
     }
 
     case "EXISTS": {
-      return ["EXISTS ( ", ...operation(expression.builder), ")"];
+      return ["EXISTS (", ...operation(expression.builder), ")"];
     }
 
     case "SET": {
