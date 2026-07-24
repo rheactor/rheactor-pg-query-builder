@@ -1,4 +1,4 @@
-﻿export type Cast =
+export type Cast =
   | "BIGINT"
   | "BOOLEAN"
   | "BYTEA"

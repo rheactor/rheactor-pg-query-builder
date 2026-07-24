@@ -1,4 +1,4 @@
-﻿import type { Expression } from "#/types/Expression";
+import type { Expression } from "#/types/Expression";
 
 function customCall(identifier: string, ...functionArguments: Expression[]) {
   return { type: "CALL", identifier, functionArguments } as const;
@@ -268,12 +268,12 @@ function call(identifier: "JSON_EACH_TEXT" | "JSONB_EACH_TEXT", json: Expression
 function call(
   identifier: "JSON_EXTRACT_PATH" | "JSONB_EXTRACT_PATH",
   fromJson: Expression,
-  ...pathElems: Expression[]
+  ...pathElements: Expression[]
 ): Expression;
 function call(
   identifier: "JSON_EXTRACT_PATH_TEXT" | "JSONB_EXTRACT_PATH_TEXT",
   fromJson: Expression,
-  ...pathElems: Expression[]
+  ...pathElements: Expression[]
 ): Expression;
 function call(
   identifier: "JSON_OBJECT_AGG" | "JSONB_OBJECT_AGG",

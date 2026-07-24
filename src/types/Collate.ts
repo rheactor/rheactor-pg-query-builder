@@ -1,1 +1,1 @@
-﻿export type Collate = string;
+export type Collate = string;

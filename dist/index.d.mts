@@ -1,11 +1,3 @@
-//#region src/types/Value.d.ts
-type Value = boolean | number | string | null;
-//#endregion
-//#region src/types/Operation.d.ts
-type Operation = string | {
-  value: Value;
-};
-//#endregion
 //#region src/types/Cast.d.ts
 type Cast = "BIGINT" | "BOOLEAN" | "BYTEA" | "DATE" | "DOUBLE PRECISION" | "INTEGER" | "JSON" | "JSONB" | "NUMERIC" | "REAL" | "SMALLINT" | "TEXT" | "TIMESTAMP" | "VARCHAR";
 //#endregion
@@ -21,6 +13,9 @@ type Identifier = string;
 //#region src/types/JsonValue.d.ts
 type JsonValueBase = boolean | number | object | string | null;
 type JsonValue = JsonValueBase | JsonValueBase[];
+//#endregion
+//#region src/types/Value.d.ts
+type Value = boolean | number | string | null;
 //#endregion
 //#region src/types/ValueExtended.d.ts
 type ValueExtended = Value | bigint;
@@ -115,6 +110,11 @@ type Expression = Builder | Identifier | {
   type: JsonOperator;
   sideA: Expression;
   sideB: Expression;
+};
+//#endregion
+//#region src/types/Operation.d.ts
+type Operation = string | {
+  value: Value;
 };
 //#endregion
 //#region src/types/SampleMethod.d.ts
@@ -235,8 +235,8 @@ declare class BuilderSelect extends Builder {
 //#region src/BuilderSetOperation.d.ts
 declare class BuilderSetOperation extends Builder {
   private readonly queries;
-  private readonly setOperation;
-  constructor(queries: Expression[], setOperation?: "EXCEPT" | "INTERSECT" | "UNION ALL" | "UNION");
+  private readonly operation;
+  constructor(queries: Expression[], operation?: "EXCEPT" | "INTERSECT" | "UNION ALL" | "UNION");
   getOperations(): Operation[];
 }
 //#endregion
@@ -381,8 +381,8 @@ declare function call(identifier: "JSON_BUILD_ARRAY" | "JSONB_BUILD_ARRAY", ...v
 declare function call(identifier: "JSON_BUILD_OBJECT" | "JSONB_BUILD_OBJECT", ...values: Expression[]): Expression;
 declare function call(identifier: "JSON_EACH" | "JSONB_EACH", json: Expression): Expression;
 declare function call(identifier: "JSON_EACH_TEXT" | "JSONB_EACH_TEXT", json: Expression): Expression;
-declare function call(identifier: "JSON_EXTRACT_PATH" | "JSONB_EXTRACT_PATH", fromJson: Expression, ...pathElems: Expression[]): Expression;
-declare function call(identifier: "JSON_EXTRACT_PATH_TEXT" | "JSONB_EXTRACT_PATH_TEXT", fromJson: Expression, ...pathElems: Expression[]): Expression;
+declare function call(identifier: "JSON_EXTRACT_PATH" | "JSONB_EXTRACT_PATH", fromJson: Expression, ...pathElements: Expression[]): Expression;
+declare function call(identifier: "JSON_EXTRACT_PATH_TEXT" | "JSONB_EXTRACT_PATH_TEXT", fromJson: Expression, ...pathElements: Expression[]): Expression;
 declare function call(identifier: "JSON_OBJECT_AGG" | "JSONB_OBJECT_AGG", key: Expression, value: Expression): Expression;
 declare function call(identifier: "JSON_OBJECT_KEYS" | "JSONB_OBJECT_KEYS", json: Expression): Expression;
 declare function call(identifier: "JSON_PRETTY" | "JSONB_PRETTY", json: Expression): Expression;

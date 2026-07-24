@@ -1,23 +1,29 @@
-﻿import type { Expression } from "#/types/Expression";
-import type { Operation } from "#/types/Operation";
-
 import { Builder } from "#/Builder";
 import { isFalseable } from "#/services/FalseableService";
 
-export function joinOperations(operations: Operation[][], joiner: string, includeParens: boolean) {
+import type { Expression } from "#/types/Expression";
+import type { Operation } from "#/types/Operation";
+
+export function joinOperations(
+  operations: Operation[][],
+  joiner: string,
+  shouldIncludeParens: boolean,
+) {
   const joinedOperations: Operation[] = [];
 
   for (const innerOperations of operations) {
-    if (innerOperations.length > 0) {
-      if (joinedOperations.length > 0) {
-        joinedOperations.push(joiner);
-      }
-
-      joinedOperations.push(...innerOperations);
+    if (innerOperations.length === 0) {
+      continue;
     }
+
+    if (joinedOperations.length > 0) {
+      joinedOperations.push(joiner);
+    }
+
+    joinedOperations.push(...innerOperations);
   }
 
-  return includeParens ? ["(", ...joinedOperations, ")"] : joinedOperations;
+  return shouldIncludeParens ? ["(", ...joinedOperations, ")"] : joinedOperations;
 }
 
 export function operation(expression: Expression): Operation[] {

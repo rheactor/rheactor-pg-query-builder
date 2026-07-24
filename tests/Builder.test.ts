@@ -1,10 +1,12 @@
-﻿import { describe, expect, it } from "vitest";
+/* eslint-disable unicorn/max-nested-calls */
+import { describe, expect, it } from "vitest";
+
+import sql from "#/index";
 
 import type { Builder } from "#/Builder";
-import sql from "#/index";
 import type { Value } from "#/types/Value";
 
-function alwaysFalse() {
+function shouldAlwaysFalse() {
   return false;
 }
 
@@ -349,7 +351,7 @@ describe("class Builder", () => {
         .select("id", "name")
         .from("users")
         .where(sql.eq("name", sql.collate(sql.value("John"), "POSIX")))
-        .where(alwaysFalse() && sql.value("always ignore"))
+        .where(shouldAlwaysFalse() && sql.value("always ignore"))
         .orderBy("id", "DESC", "NULLS FIRST")
         .orderBy("name", "ASC")
         .limit(sql.staticValue(10), sql.value(20)),
@@ -502,7 +504,7 @@ describe("class Builder", () => {
       sql
         .insert("test", ["id"])
         .values(sql.value(123))
-        .onConflict(alwaysFalse() && sql.conflict().doNothing()),
+        .onConflict(shouldAlwaysFalse() && sql.conflict().doNothing()),
       'INSERT INTO "test" ("id") VALUES ($1)',
       [123],
     ],
@@ -545,7 +547,7 @@ describe("class Builder", () => {
             .set("id", sql.value(123))
             .set("key", sql.staticValue(456))
             .where(sql.eq("id", sql.value(123)))
-            .where(alwaysFalse() && sql.eq("key", sql.staticValue(456))),
+            .where(shouldAlwaysFalse() && sql.eq("key", sql.staticValue(456))),
         ),
       'INSERT INTO "test" ("id") VALUES ($1) ON CONFLICT ("id") DO UPDATE SET "id" = $1, "key" = 456 WHERE "id" = $1',
       [123],

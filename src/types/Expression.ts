@@ -1,4 +1,4 @@
-﻿import type { Builder } from "#/Builder";
+import type { Builder } from "#/Builder";
 import type { Cast } from "#/types/Cast";
 import type { Collate } from "#/types/Collate";
 import type { Falseable } from "#/types/Falseable";

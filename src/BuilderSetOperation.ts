@@ -1,12 +1,13 @@
-﻿import { Builder } from "#/Builder";
-import { operation } from "#/services/OperationService";
+import { Builder } from "#/Builder";
+import { operation as expressionOperation } from "#/services/OperationService";
+
 import type { Expression } from "#/types/Expression";
 import type { Operation } from "#/types/Operation";
 
 export class BuilderSetOperation extends Builder {
   public constructor(
     private readonly queries: Expression[],
-    private readonly setOperation: "EXCEPT" | "INTERSECT" | "UNION ALL" | "UNION" = "UNION",
+    private readonly operation: "EXCEPT" | "INTERSECT" | "UNION ALL" | "UNION" = "UNION",
   ) {
     super();
   }
@@ -16,13 +17,13 @@ export class BuilderSetOperation extends Builder {
 
     for (const query of this.queries) {
       if (operations.length > 0) {
-        operations.push(` ${this.setOperation} `);
+        operations.push(` ${this.operation} `);
       }
 
       if (query instanceof BuilderSetOperation) {
-        operations.push("(", ...operation(query), ")");
+        operations.push("(", ...expressionOperation(query), ")");
       } else {
-        operations.push(...operation(query));
+        operations.push(...expressionOperation(query));
       }
     }
 

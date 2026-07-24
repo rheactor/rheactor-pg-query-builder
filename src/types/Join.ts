@@ -1,4 +1,4 @@
-﻿import type { Builder } from "#/Builder";
+import type { Builder } from "#/Builder";
 import type { Expression } from "#/types/Expression";
 import type { Identifier } from "#/types/Identifier";
 

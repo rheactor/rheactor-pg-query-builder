@@ -1,12 +1,11 @@
-﻿import { joinOperations, operation } from "#/services/OperationService";
-import type { Operation } from "#/types/Operation";
+import { Builder } from "#/Builder";
+import { BuilderConflict } from "#/BuilderConflict";
+import { joinOperations, operation } from "#/services/OperationService";
 
 import type { Expression } from "#/types/Expression";
 import type { Falseable } from "#/types/Falseable";
 import type { Identifier } from "#/types/Identifier";
-
-import { Builder } from "#/Builder";
-import { BuilderConflict } from "#/BuilderConflict";
+import type { Operation } from "#/types/Operation";
 
 export class BuilderInsert extends Builder {
   private readonly onConflictBuilders: BuilderConflict[] = [];
@@ -65,7 +64,7 @@ export class BuilderInsert extends Builder {
       operations.push(
         "VALUES ",
         ...joinOperations(
-          this.valuesOperations.flatMap((values) => [joinOperations(values, ", ", true)]),
+          this.valuesOperations.map((values) => joinOperations(values, ", ", true)),
           ", ",
           false,
         ),

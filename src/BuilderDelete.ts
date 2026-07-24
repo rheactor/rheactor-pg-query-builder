@@ -1,10 +1,9 @@
-﻿import { joinOperations } from "#/services/OperationService";
-import type { Operation } from "#/types/Operation";
+import { Builder } from "#/Builder";
+import { joinOperations } from "#/services/OperationService";
 
 import type { Expression } from "#/types/Expression";
 import type { Identifier } from "#/types/Identifier";
-
-import { Builder } from "#/Builder";
+import type { Operation } from "#/types/Operation";
 
 export class BuilderDelete extends Builder {
   public constructor(table: Identifier) {

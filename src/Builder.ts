@@ -1,14 +1,13 @@
-﻿import type { Operation } from "#/types/Operation";
-import type { Value } from "#/types/Value";
+import { isFalseable } from "#/services/FalseableService";
+import { joinOperations, operation } from "#/services/OperationService";
 
 import type { Expression } from "#/types/Expression";
 import type { Falseable } from "#/types/Falseable";
 import type { Identifier } from "#/types/Identifier";
 import type { JoinClause } from "#/types/Join";
+import type { Operation } from "#/types/Operation";
 import type { SampleMethod } from "#/types/SampleMethod";
-
-import { isFalseable } from "#/services/FalseableService";
-import { joinOperations, operation } from "#/services/OperationService";
+import type { Value } from "#/types/Value";
 
 export abstract class Builder {
   protected readonly columnsOperations: Operation[][] = [];
@@ -29,6 +28,7 @@ export abstract class Builder {
 
   private offsetExpression?: Expression;
 
+  // eslint-disable-next-line unicorn/consistent-boolean-name
   public conditional(condition: boolean, then: (builder: this) => void) {
     if (condition) {
       then(this);
@@ -55,7 +55,7 @@ export abstract class Builder {
 
     return {
       query: query.join("").trimEnd(),
-      parameters: [...parameters.keys()],
+      parameters: parameters.keys().toArray(),
     };
   }
 

@@ -1,12 +1,11 @@
-﻿import { joinOperations, operation } from "#/services/OperationService";
-import type { Operation } from "#/types/Operation";
+import { Builder } from "#/Builder";
+import { joinOperations, operation } from "#/services/OperationService";
 
 import type { Expression } from "#/types/Expression";
 import type { Falseable } from "#/types/Falseable";
 import type { Identifier } from "#/types/Identifier";
+import type { Operation } from "#/types/Operation";
 import type { SampleMethod } from "#/types/SampleMethod";
-
-import { Builder } from "#/Builder";
 
 type OrderDirection = "ASC" | "DESC";
 type OrderNulls = "NULLS FIRST" | "NULLS LAST";
@@ -34,6 +33,7 @@ export class BuilderSelect extends Builder {
     return this.internalColumnAliased(...args);
   }
 
+  // eslint-disable-next-line unicorn/consistent-boolean-name
   public distinct(mode = true) {
     this.selectDistinct = mode;
 
