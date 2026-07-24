@@ -283,13 +283,13 @@ function call(
 function call(identifier: "JSON_OBJECT_KEYS" | "JSONB_OBJECT_KEYS", json: Expression): Expression;
 function call(identifier: "JSON_PRETTY" | "JSONB_PRETTY", json: Expression): Expression;
 function call(
-  identifier: "JSON_SET" | "JSONB_SET",
+  identifier: "JSONB_SET",
   target: Expression,
   path: Expression,
   newValue: Expression,
 ): Expression;
 function call(
-  identifier: "JSON_SET" | "JSONB_SET",
+  identifier: "JSONB_SET",
   target: Expression,
   path: Expression,
   newValue: Expression,
@@ -302,7 +302,6 @@ function call(
   stripInArrays: Expression,
 ): Expression;
 function call(identifier: "JSON_TYPEOF" | "JSONB_TYPEOF", json: Expression): Expression;
-function call(identifier: "JSON_VALID" | "JSONB_VALID", json: Expression): Expression;
 function call(identifier: "TO_JSON" | "TO_JSONB", value: Expression): Expression;
 function call(
   identifier: "JSONB_INSERT",

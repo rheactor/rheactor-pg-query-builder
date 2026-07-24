@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@rheactor/eslint-config-rheactor": "github:rheactor/eslint-config-rheactor",
+    "@rheactor/rheactor-pg-connector": "github:rheactor/rheactor-pg-connector",
     "@types/node": "^26.1.1",
     "@vitest/coverage-v8": "^4.1.10",
     "@vitest/eslint-plugin": "^1.6.24",

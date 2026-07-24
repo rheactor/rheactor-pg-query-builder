@@ -386,12 +386,11 @@ declare function call(identifier: "JSON_EXTRACT_PATH_TEXT" | "JSONB_EXTRACT_PATH
 declare function call(identifier: "JSON_OBJECT_AGG" | "JSONB_OBJECT_AGG", key: Expression, value: Expression): Expression;
 declare function call(identifier: "JSON_OBJECT_KEYS" | "JSONB_OBJECT_KEYS", json: Expression): Expression;
 declare function call(identifier: "JSON_PRETTY" | "JSONB_PRETTY", json: Expression): Expression;
-declare function call(identifier: "JSON_SET" | "JSONB_SET", target: Expression, path: Expression, newValue: Expression): Expression;
-declare function call(identifier: "JSON_SET" | "JSONB_SET", target: Expression, path: Expression, newValue: Expression, createIfMissing: Expression): Expression;
+declare function call(identifier: "JSONB_SET", target: Expression, path: Expression, newValue: Expression): Expression;
+declare function call(identifier: "JSONB_SET", target: Expression, path: Expression, newValue: Expression, createIfMissing: Expression): Expression;
 declare function call(identifier: "JSON_STRIP_NULLS" | "JSONB_STRIP_NULLS", target: Expression): Expression;
 declare function call(identifier: "JSON_STRIP_NULLS" | "JSONB_STRIP_NULLS", target: Expression, stripInArrays: Expression): Expression;
 declare function call(identifier: "JSON_TYPEOF" | "JSONB_TYPEOF", json: Expression): Expression;
-declare function call(identifier: "JSON_VALID" | "JSONB_VALID", json: Expression): Expression;
 declare function call(identifier: "TO_JSON" | "TO_JSONB", value: Expression): Expression;
 declare function call(identifier: "JSONB_INSERT", target: Expression, path: Expression, newValue: Expression): Expression;
 declare function call(identifier: "JSONB_INSERT", target: Expression, path: Expression, newValue: Expression, insertAfter: Expression): Expression;

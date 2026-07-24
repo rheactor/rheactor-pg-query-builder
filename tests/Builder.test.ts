@@ -53,6 +53,16 @@ describe("class Builder", () => {
       [123],
     ],
     [
+      sql
+        .select()
+        .fromAliased(
+          sql.insert("t", ["a"]).values(sql.value(1)).returning(sql.value(2)),
+          "x",
+        ),
+      'SELECT TRUE FROM INSERT INTO "t" ("a") VALUES ($1) RETURNING $2 AS "x"',
+      [1, 2],
+    ],
+    [
       sql.select().fromSampled("users", "BERNOULLI", 10),
       'SELECT TRUE FROM "users" TABLESAMPLE BERNOULLI(10)',
       [],
