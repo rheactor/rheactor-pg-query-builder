@@ -1,8 +1,10 @@
 import type { Expression } from "#/types/Expression";
 
-function customCall(identifier: string, ...functionArguments: Expression[]) {
-  return { type: "CALL", identifier, functionArguments } as const;
-}
+function call(identifier: string & {}, ...functionArguments: Expression[]): Expression;
+
+// https://www.postgresql.org/docs/current/functions-comparison.html
+function call(identifier: "NUM_NONNULLS", ...expressions: Expression[]): Expression;
+function call(identifier: "NUM_NULLS", ...expressions: Expression[]): Expression;
 
 // Common / General Functions
 function call(identifier: "ABS", value: Expression): Expression;
@@ -420,8 +422,8 @@ function call(
 function call(identifier: "PG_TRIGGER_DEPTH"): Expression;
 function call(identifier: "VERSION"): Expression;
 
-function call(...args: Parameters<typeof customCall>): Expression {
-  return customCall(...args);
+function call(identifier: string, ...functionArguments: Expression[]): Expression {
+  return { type: "CALL", identifier, functionArguments } as const;
 }
 
-export { call, customCall };
+export { call };

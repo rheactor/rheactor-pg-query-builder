@@ -28,7 +28,7 @@ type ContainmentOperator = "@>" | "<@";
 type ArrayConcatOperator = "&&" | "||";
 type LogicalOperator = "AND" | "OR";
 type Expression = Builder | Identifier | {
-  type: "BETWEEN";
+  type: "BETWEEN SYMMETRIC" | "BETWEEN";
   identifier: Identifier;
   from: Expression;
   to: Expression;
@@ -36,6 +36,10 @@ type Expression = Builder | Identifier | {
   type: "ILIKE" | "LIKE" | "SET";
   identifier: Identifier;
   expression: Expression;
+} | {
+  type: "IS DISTINCT FROM";
+  expressionA: Expression;
+  expressionB: Expression;
 } | {
   type: "OPERATOR";
   operator: MathOperator;
@@ -77,14 +81,14 @@ type Expression = Builder | Identifier | {
   identifier: Identifier;
   values: Expression[];
 } | {
+  type: "IS FALSE" | "IS TRUE" | "IS UNKNOWN" | "NOT";
+  expression: Expression;
+} | {
   type: "IS NULL";
   identifier: Identifier;
 } | {
   type: "JSON";
   argument: JsonValue;
-} | {
-  type: "NOT";
-  expression: Expression;
 } | {
   type: "RAW";
   expression: string;
@@ -252,11 +256,9 @@ declare class BuilderUpdate extends Builder {
 }
 //#endregion
 //#region src/supports/PostgresFunctions.d.ts
-declare function customCall(identifier: string, ...functionArguments: Expression[]): {
-  readonly type: "CALL";
-  readonly identifier: string;
-  readonly functionArguments: Expression[];
-};
+declare function call(identifier: string & {}, ...functionArguments: Expression[]): Expression;
+declare function call(identifier: "NUM_NONNULLS", ...expressions: Expression[]): Expression;
+declare function call(identifier: "NUM_NULLS", ...expressions: Expression[]): Expression;
 declare function call(identifier: "ABS", value: Expression): Expression;
 declare function call(identifier: "COALESCE", ...expressions: Expression[]): Expression;
 declare function call(identifier: "GREATEST", ...expressions: Expression[]): Expression;
@@ -454,6 +456,7 @@ declare const functions: {
   any(sideA: Expression, operator: ComparisonOperator, sideB: Expression): Expression;
   arrayOverlap(sideA: Expression, sideB: Expression): Expression;
   between(identifier: Identifier, from: Expression, to: Expression): Expression;
+  betweenSymmetric(identifier: Identifier, from: Expression, to: Expression): Expression;
   call: typeof call;
   case(expression?: Expression): BuilderCase;
   cast(expression: Expression, castType: Cast): Expression;
@@ -461,13 +464,16 @@ declare const functions: {
   concatOp(sideA: Expression, sideB: Expression): Expression;
   containedBy(sideA: Expression, sideB: Expression): Expression;
   contains(sideA: Expression, sideB: Expression): Expression;
-  customCall: typeof customCall;
   delete(table: Identifier): BuilderDelete;
   eq(sideA: Expression, sideB: Expression): Expression;
   exists(builder: Builder): Expression;
   gt(sideA: Expression, sideB: Expression): Expression;
   gte(sideA: Expression, sideB: Expression): Expression;
   isNull(identifier: Identifier): Expression;
+  isTrue(expression: Expression): Expression;
+  isFalse(expression: Expression): Expression;
+  isUnknown(expression: Expression): Expression;
+  isDistinctFrom(expressionA: Expression, expressionB: Expression): Expression;
   in(identifier: Identifier, ...values: Expression[]): Expression;
   ilike(identifier: Identifier, pattern: Expression): Expression;
   insert(table: Identifier, columns: Identifier[]): BuilderInsert;

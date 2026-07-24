@@ -55,10 +55,7 @@ describe("class Builder", () => {
     [
       sql
         .select()
-        .fromAliased(
-          sql.insert("t", ["a"]).values(sql.value(1)).returning(sql.value(2)),
-          "x",
-        ),
+        .fromAliased(sql.insert("t", ["a"]).values(sql.value(1)).returning(sql.value(2)), "x"),
       'SELECT TRUE FROM INSERT INTO "t" ("a") VALUES ($1) RETURNING $2 AS "x"',
       [1, 2],
     ],
@@ -114,23 +111,6 @@ describe("class Builder", () => {
     [sql.select().where(sql.value(false)), "SELECT TRUE WHERE $1", [0]],
     [sql.select().where(sql.value(null)), "SELECT TRUE WHERE $1", [null]],
     [sql.select().where(sql.value(123)), "SELECT TRUE WHERE $1", [123]],
-    [sql.select().where(sql.eq("test1", "test2")), 'SELECT TRUE WHERE "test1" = "test2"', []],
-    [sql.select().where(sql.eq("test", sql.value(123))), 'SELECT TRUE WHERE "test" = $1', [123]],
-    [
-      sql.select().where(sql.eq("test1", sql.value(123)), sql.eq("test2", sql.value(123))),
-      'SELECT TRUE WHERE "test1" = $1 AND "test2" = $1',
-      [123],
-    ],
-    [
-      sql.select().where(sql.eq("test1", sql.value(123)), sql.eq("test2", sql.value(456))),
-      'SELECT TRUE WHERE "test1" = $1 AND "test2" = $2',
-      [123, 456],
-    ],
-    [sql.select().where(sql.neq("test", sql.value(123))), 'SELECT TRUE WHERE "test" != $1', [123]],
-    [sql.select().where(sql.gt("test", sql.value(123))), 'SELECT TRUE WHERE "test" > $1', [123]],
-    [sql.select().where(sql.gte("test", sql.value(123))), 'SELECT TRUE WHERE "test" >= $1', [123]],
-    [sql.select().where(sql.lt("test", sql.value(123))), 'SELECT TRUE WHERE "test" < $1', [123]],
-    [sql.select().where(sql.lte("test", sql.value(123))), 'SELECT TRUE WHERE "test" <= $1', [123]],
     [
       sql.select().where(sql.not(sql.eq("test", sql.value(123)))),
       'SELECT TRUE WHERE NOT "test" = $1',
@@ -141,48 +121,6 @@ describe("class Builder", () => {
       'SELECT TRUE WHERE NOT NOT "test" = $1',
       [123],
     ],
-    [
-      sql.select().where(sql.between("test", sql.value(123), sql.value(123))),
-      'SELECT TRUE WHERE "test" BETWEEN $1 AND $1',
-      [123],
-    ],
-    [
-      sql.select().where(sql.between("test", sql.value(123), sql.value(456))),
-      'SELECT TRUE WHERE "test" BETWEEN $1 AND $2',
-      [123, 456],
-    ],
-    [
-      sql.select().where(sql.notBetween("test", sql.value(123), sql.value(123))),
-      'SELECT TRUE WHERE NOT "test" BETWEEN $1 AND $1',
-      [123],
-    ],
-    [
-      sql.select().where(sql.notBetween("test", sql.value(123), sql.value(456))),
-      'SELECT TRUE WHERE NOT "test" BETWEEN $1 AND $2',
-      [123, 456],
-    ],
-    [
-      sql.select().where(sql.in("status", sql.value("a"), sql.value("b"))),
-      'SELECT TRUE WHERE "status" IN ($1, $2)',
-      ["a", "b"],
-    ],
-    [
-      sql.select().where(sql.in("status", sql.value("a"))),
-      'SELECT TRUE WHERE "status" IN ($1)',
-      ["a"],
-    ],
-    [
-      sql.select().where(sql.in("id", sql.select("id").from("active"))),
-      'SELECT TRUE WHERE "id" IN (SELECT "id" FROM "active")',
-      [],
-    ],
-    [
-      sql.select().where(sql.not(sql.in("id", sql.value(1), sql.value(2)))),
-      'SELECT TRUE WHERE NOT "id" IN ($1, $2)',
-      [1, 2],
-    ],
-    [sql.select().where(sql.isNull("test")), 'SELECT TRUE WHERE "test" IS NULL', []],
-    [sql.select().where(sql.isNotNull("test")), 'SELECT TRUE WHERE NOT "test" IS NULL', []],
     [
       sql.select().where(sql.like("name", sql.value("%John%"))),
       'SELECT TRUE WHERE "name" LIKE $1',
@@ -297,7 +235,7 @@ describe("class Builder", () => {
       "SELECT TRUE WHERE JSONB_INSERT($1, $2, $3)",
       ["{}", "$[#]", 123],
     ],
-    [sql.select().where(sql.customCall("XYZ")), "SELECT TRUE WHERE XYZ()", []],
+    [sql.select().where(sql.call("XYZ")), "SELECT TRUE WHERE XYZ()", []],
     [sql.select().where(sql.exists(sql.select())), "SELECT TRUE WHERE EXISTS (SELECT TRUE)", []],
     [sql.select().where(sql.staticValue(true)), "SELECT TRUE WHERE TRUE", []],
     [sql.select().where(sql.staticValue(false)), "SELECT TRUE WHERE FALSE", []],

@@ -151,21 +151,34 @@ export function operation(expression: Expression): Operation[] {
     case "ILIKE": {
       return [
         ...operation(expression.identifier),
-        " ",
-        expression.type,
-        " ",
+        ` ${expression.type} `,
         ...operation(expression.expression),
       ];
     }
 
-    case "BETWEEN": {
+    case "IS DISTINCT FROM": {
+      return [
+        ...operation(expression.expressionA),
+        ` IS DISTINCT FROM `,
+        ...operation(expression.expressionB),
+      ];
+    }
+
+    case "BETWEEN":
+    case "BETWEEN SYMMETRIC": {
       return [
         ...operation(expression.identifier),
-        " BETWEEN ",
+        ` ${expression.type} `,
         ...operation(expression.from),
         " AND ",
         ...operation(expression.to),
       ];
+    }
+
+    case "IS TRUE":
+    case "IS FALSE":
+    case "IS UNKNOWN": {
+      return [...operation(expression.expression), ` ${expression.type}`];
     }
 
     case "COLLATE": {

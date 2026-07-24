@@ -5,7 +5,7 @@ import { BuilderInsert } from "#/BuilderInsert";
 import { BuilderSelect } from "#/BuilderSelect";
 import { BuilderSetOperation } from "#/BuilderSetOperation";
 import { BuilderUpdate } from "#/BuilderUpdate";
-import { call, customCall } from "#/supports/PostgresFunctions";
+import { call } from "#/supports/PostgresFunctions";
 
 import type { Builder } from "#/Builder";
 import type { Cast } from "#/types/Cast";
@@ -38,6 +38,10 @@ const functions = {
     return { type: "BETWEEN", identifier, from, to };
   },
 
+  betweenSymmetric(identifier: Identifier, from: Expression, to: Expression): Expression {
+    return { type: "BETWEEN SYMMETRIC", identifier, from, to };
+  },
+
   call,
 
   case(expression?: Expression) {
@@ -64,8 +68,6 @@ const functions = {
     return { type: "@>", sideA, sideB };
   },
 
-  customCall,
-
   delete(table: Identifier) {
     return new BuilderDelete(table);
   },
@@ -88,6 +90,22 @@ const functions = {
 
   isNull(identifier: Identifier): Expression {
     return { type: "IS NULL", identifier };
+  },
+
+  isTrue(expression: Expression): Expression {
+    return { type: "IS TRUE", expression };
+  },
+
+  isFalse(expression: Expression): Expression {
+    return { type: "IS FALSE", expression };
+  },
+
+  isUnknown(expression: Expression): Expression {
+    return { type: "IS UNKNOWN", expression };
+  },
+
+  isDistinctFrom(expressionA: Expression, expressionB: Expression): Expression {
+    return { type: "IS DISTINCT FROM", expressionA, expressionB };
   },
 
   in(identifier: Identifier, ...values: Expression[]): Expression {

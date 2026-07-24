@@ -23,7 +23,7 @@ export type Expression =
   | Builder
   | Identifier
   | {
-      type: "BETWEEN";
+      type: "BETWEEN SYMMETRIC" | "BETWEEN";
       identifier: Identifier;
       from: Expression;
       to: Expression;
@@ -32,6 +32,11 @@ export type Expression =
       type: "ILIKE" | "LIKE" | "SET";
       identifier: Identifier;
       expression: Expression;
+    }
+  | {
+      type: "IS DISTINCT FROM";
+      expressionA: Expression;
+      expressionB: Expression;
     }
   | {
       type: "OPERATOR";
@@ -52,9 +57,9 @@ export type Expression =
   | { type: "EXISTS"; builder: Builder }
   | { type: "IDENTIFIER"; identifier: Expression; alias?: Identifier }
   | { type: "IN"; identifier: Identifier; values: Expression[] }
+  | { type: "IS FALSE" | "IS TRUE" | "IS UNKNOWN" | "NOT"; expression: Expression }
   | { type: "IS NULL"; identifier: Identifier }
   | { type: "JSON"; argument: JsonValue }
-  | { type: "NOT"; expression: Expression }
   | { type: "RAW"; expression: string }
   | { type: "STATIC"; argument: ValueExtended }
   | { type: "VALUE"; argument: Value }

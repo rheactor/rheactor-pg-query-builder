@@ -42,7 +42,6 @@ A type-safe SQL query builder for PostgreSQL that generates parameterized querie
 
 ## Extension Points
 
-- `customCall(functionName, ...args)`: Call user-defined SQL functions
 - `sql.raw(string)`: Insert raw SQL expressions when needed
 - All standard SQL operators are available
 
