@@ -1,1 +1,1 @@
-export type SampleMethod = "BERNOULLI" | "SYSTEM";
+﻿export type SampleMethod = "BERNOULLI" | "SYSTEM";

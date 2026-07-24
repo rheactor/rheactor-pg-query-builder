@@ -1,8 +1,261 @@
-import type { Expression } from "../types/Expression";
+//#region src/types/Value.d.ts
+type Value = boolean | number | string | null;
+//#endregion
+//#region src/types/Operation.d.ts
+type Operation = string | {
+  value: Value;
+};
+//#endregion
+//#region src/types/Cast.d.ts
+type Cast = "BIGINT" | "BOOLEAN" | "BYTEA" | "DATE" | "DOUBLE PRECISION" | "INTEGER" | "JSON" | "JSONB" | "NUMERIC" | "REAL" | "SMALLINT" | "TEXT" | "TIMESTAMP" | "VARCHAR";
+//#endregion
+//#region src/types/Collate.d.ts
+type Collate = string;
+//#endregion
+//#region src/types/Falseable.d.ts
+type Falseable<T> = T | false | null | undefined;
+//#endregion
+//#region src/types/Identifier.d.ts
+type Identifier = string;
+//#endregion
+//#region src/types/JsonValue.d.ts
+type JsonValueBase = boolean | number | object | string | null;
+type JsonValue = JsonValueBase | JsonValueBase[];
+//#endregion
+//#region src/types/ValueExtended.d.ts
+type ValueExtended = Value | bigint;
+//#endregion
+//#region src/types/Expression.d.ts
+type MathOperator = "-" | "*" | "/" | "%" | "^" | "+";
+type ComparisonOperator = "!=" | "<" | "<=" | "=" | ">" | ">=";
+type JsonOperator = "->" | "->>" | "?" | "?&" | "?|" | "#>" | "#>>";
+type ContainmentOperator = "@>" | "<@";
+type ArrayConcatOperator = "&&" | "||";
+type LogicalOperator = "AND" | "OR";
+type Expression = Builder | Identifier | {
+  type: "BETWEEN";
+  identifier: Identifier;
+  from: Expression;
+  to: Expression;
+} | {
+  type: "ILIKE" | "LIKE" | "SET";
+  identifier: Identifier;
+  expression: Expression;
+} | {
+  type: "OPERATOR";
+  operator: MathOperator;
+  expressionA: Expression;
+  expressionB: Expression;
+} | {
+  type: LogicalOperator;
+  expressions: Array<Falseable<Expression>>;
+  includeParens?: boolean;
+} | {
+  type: "ALL" | "ANY";
+  operator: ComparisonOperator;
+  sideA: Expression;
+  sideB: Expression;
+} | {
+  type: "CALL";
+  identifier: Identifier;
+  functionArguments: Expression[];
+} | {
+  type: "CAST";
+  expression: Expression;
+  cast: Cast;
+} | {
+  type: "COLLATE";
+  expression: Expression;
+  collate: Collate;
+} | {
+  type: "EXCLUDED";
+  identifier: Identifier;
+} | {
+  type: "EXISTS";
+  builder: Builder;
+} | {
+  type: "IDENTIFIER";
+  identifier: Expression;
+  alias?: Identifier;
+} | {
+  type: "IN";
+  identifier: Identifier;
+  values: Expression[];
+} | {
+  type: "IS NULL";
+  identifier: Identifier;
+} | {
+  type: "JSON";
+  argument: JsonValue;
+} | {
+  type: "NOT";
+  expression: Expression;
+} | {
+  type: "RAW";
+  expression: string;
+} | {
+  type: "STATIC";
+  argument: ValueExtended;
+} | {
+  type: "VALUE";
+  argument: Value;
+} | {
+  type: ArrayConcatOperator;
+  sideA: Expression;
+  sideB: Expression;
+} | {
+  type: ComparisonOperator;
+  sideA: Expression;
+  sideB: Expression;
+} | {
+  type: ContainmentOperator;
+  sideA: Expression;
+  sideB: Expression;
+} | {
+  type: JsonOperator;
+  sideA: Expression;
+  sideB: Expression;
+};
+//#endregion
+//#region src/types/SampleMethod.d.ts
+type SampleMethod = "BERNOULLI" | "SYSTEM";
+//#endregion
+//#region src/Builder.d.ts
+declare abstract class Builder {
+  protected readonly columnsOperations: Operation[][];
+  protected readonly tablesOperations: Operation[][];
+  protected readonly setsOperations: Operation[][];
+  protected readonly valuesOperations: Operation[][][];
+  private readonly wheresExpressions;
+  private readonly joins;
+  private readonly returningIdentifiers;
+  private limitExpression?;
+  private offsetExpression?;
+  conditional(condition: boolean, then: (builder: this) => void): this;
+  build(): {
+    query: string;
+    parameters: Value[];
+  };
+  join(table: Identifier, alias: Identifier, ...conditions: Expression[]): this;
+  joinLeft(table: Identifier, alias: Identifier, ...conditions: Expression[]): this;
+  joinLateral(query: Builder, alias: Identifier, ...conditions: Expression[]): this;
+  joinLeftLateral(query: Builder, alias: Identifier, ...conditions: Expression[]): this;
+  joinRight(table: Identifier, alias: Identifier, ...conditions: Expression[]): this;
+  joinFullOuter(table: Identifier, alias: Identifier, ...conditions: Expression[]): this;
+  joinCross(table: Identifier, alias: Identifier): this;
+  protected internalColumn(...columns: Array<Falseable<Expression>>): this;
+  protected internalColumnAliased(identifier: Falseable<Expression>, alias?: Identifier): this;
+  protected internalTable(...tables: Array<Falseable<Identifier>>): this;
+  protected internalTableAliased(table: Falseable<Expression>, alias?: Identifier): this;
+  protected internalTableSampled(table: Identifier, method: SampleMethod, percentage: number, alias?: Identifier): this;
+  protected internalExpressions(target: Expression[], ...expressions: Array<Falseable<Expression>>): this;
+  protected internalWhere(...expressions: Array<Falseable<Expression>>): this;
+  protected internalLimit(limit: Falseable<Expression> | number, offset?: Falseable<Expression> | number): this;
+  protected internalOffset(offset: Falseable<Expression> | number): this;
+  protected internalReturning(...expressions: Expression[]): this;
+  protected generateFromOperation(operations: Operation[]): void;
+  protected generateJoinOperations(operations: Operation[]): void;
+  protected generateSetOperation(operations: Operation[]): void;
+  protected generateWhereOperation(operations: Operation[]): void;
+  protected generateLimitOperation(operations: Operation[]): void;
+  protected generateOffsetOperation(operations: Operation[]): void;
+  protected generateReturningOperation(operations: Operation[]): void;
+  abstract getOperations(): Operation[];
+}
+//#endregion
+//#region src/BuilderCase.d.ts
+declare class BuilderCase extends Builder {
+  private readonly expression?;
+  private readonly whens;
+  private expressionElse?;
+  constructor(expression?: Expression | undefined);
+  when(expression: Expression, then: Expression): this;
+  else(expression: Expression): this;
+  getOperations(): Operation[];
+}
+//#endregion
+//#region src/BuilderConflict.d.ts
+declare class BuilderConflict extends Builder {
+  private readonly conflictWhereExpression?;
+  private conflictDoNothing;
+  constructor(columns?: Identifier[], where?: Expression);
+  doNothing(): this;
+  set(identifier: Identifier, expression: Expression): this;
+  where(...args: Parameters<Builder["internalWhere"]>): this;
+  getOperations(): Operation[];
+}
+//#endregion
+//#region src/BuilderDelete.d.ts
+declare class BuilderDelete extends Builder {
+  constructor(table: Identifier);
+  where(...args: Parameters<Builder["internalWhere"]>): this;
+  limit(...args: Parameters<Builder["internalLimit"]>): this;
+  offset(...args: Parameters<Builder["internalOffset"]>): this;
+  returning(...expressions: Expression[]): this;
+  getOperations(): Operation[];
+}
+//#endregion
+//#region src/BuilderInsert.d.ts
+declare class BuilderInsert extends Builder {
+  private readonly onConflictBuilders;
+  private selectQuery?;
+  constructor(table: Identifier, columns: Identifier[]);
+  select(query: Builder): this;
+  values(...values: Expression[]): this;
+  onConflict(conflict: Falseable<BuilderConflict>): this;
+  onConflictIgnore(columns?: Identifier[], where?: Expression): this;
+  returning(...expressions: Expression[]): this;
+  getOperations(): Operation[];
+}
+//#endregion
+//#region src/BuilderSelect.d.ts
+type OrderDirection = "ASC" | "DESC";
+type OrderNulls = "NULLS FIRST" | "NULLS LAST";
+declare class BuilderSelect extends Builder {
+  private selectDistinct;
+  private readonly orders;
+  private readonly groupByColumns;
+  private readonly havingExpressions;
+  select(...args: Parameters<Builder["internalColumn"]>): this;
+  selectAliased(...args: Parameters<Builder["internalColumnAliased"]>): this;
+  distinct(mode?: boolean): this;
+  from(...args: Parameters<Builder["internalTable"]>): this;
+  fromAliased(...args: Parameters<Builder["internalTableAliased"]>): this;
+  fromSampled(table: Identifier, method: SampleMethod, percentage: number): this;
+  fromSampledAliased(table: Identifier, alias: Identifier, method: SampleMethod, percentage: number): this;
+  where(...args: Parameters<Builder["internalWhere"]>): this;
+  having(...expressions: Array<Falseable<Expression>>): this;
+  limit(...args: Parameters<Builder["internalLimit"]>): this;
+  offset(...args: Parameters<Builder["internalOffset"]>): this;
+  groupBy(...expressions: Array<Falseable<Expression>>): this;
+  orderBy(expression: Expression, direction?: OrderDirection, nulls?: OrderNulls): this;
+  getOperations(): Operation[];
+}
+//#endregion
+//#region src/BuilderSetOperation.d.ts
+declare class BuilderSetOperation extends Builder {
+  private readonly queries;
+  private readonly setOperation;
+  constructor(queries: Expression[], setOperation?: "EXCEPT" | "INTERSECT" | "UNION ALL" | "UNION");
+  getOperations(): Operation[];
+}
+//#endregion
+//#region src/BuilderUpdate.d.ts
+declare class BuilderUpdate extends Builder {
+  constructor(table: Identifier);
+  set(identifier: Identifier, expression: Expression): this;
+  where(...args: Parameters<Builder["internalWhere"]>): this;
+  limit(...args: Parameters<Builder["internalLimit"]>): this;
+  offset(...args: Parameters<Builder["internalOffset"]>): this;
+  returning(...expressions: Expression[]): this;
+  getOperations(): Operation[];
+}
+//#endregion
+//#region src/supports/PostgresFunctions.d.ts
 declare function customCall(identifier: string, ...functionArguments: Expression[]): {
-    readonly type: "CALL";
-    readonly identifier: string;
-    readonly functionArguments: Expression[];
+  readonly type: "CALL";
+  readonly identifier: string;
+  readonly functionArguments: Expression[];
 };
 declare function call(identifier: "ABS", value: Expression): Expression;
 declare function call(identifier: "COALESCE", ...expressions: Expression[]): Expression;
@@ -194,4 +447,66 @@ declare function call(identifier: "PG_TABLE_IS_VISIBLE", reloid: Expression): Ex
 declare function call(identifier: "PG_TABLE_SIZE" | "PG_TABLESPACE_SIZE" | "PG_TOTAL_RELATION_SIZE", reloid: Expression): Expression;
 declare function call(identifier: "PG_TRIGGER_DEPTH"): Expression;
 declare function call(identifier: "VERSION"): Expression;
-export { call, customCall };
+//#endregion
+//#region src/index.d.ts
+declare const functions: {
+  and(...expressions: Array<Falseable<Expression>>): Expression;
+  all(sideA: Expression, operator: ComparisonOperator, sideB: Expression): Expression;
+  any(sideA: Expression, operator: ComparisonOperator, sideB: Expression): Expression;
+  arrayOverlap(sideA: Expression, sideB: Expression): Expression;
+  between(identifier: Identifier, from: Expression, to: Expression): Expression;
+  call: typeof call;
+  case(expression?: Expression): BuilderCase;
+  cast(expression: Expression, castType: Cast): Expression;
+  collate(expression: Expression, collateType?: Collate): Expression;
+  concatOp(sideA: Expression, sideB: Expression): Expression;
+  containedBy(sideA: Expression, sideB: Expression): Expression;
+  contains(sideA: Expression, sideB: Expression): Expression;
+  customCall: typeof customCall;
+  delete(table: Identifier): BuilderDelete;
+  eq(sideA: Expression, sideB: Expression): Expression;
+  exists(builder: Builder): Expression;
+  gt(sideA: Expression, sideB: Expression): Expression;
+  gte(sideA: Expression, sideB: Expression): Expression;
+  isNull(identifier: Identifier): Expression;
+  in(identifier: Identifier, ...values: Expression[]): Expression;
+  ilike(identifier: Identifier, pattern: Expression): Expression;
+  insert(table: Identifier, columns: Identifier[]): BuilderInsert;
+  isNotNull(identifier: Identifier): Expression;
+  jsonValue(argument: JsonValue, nullAsSQL?: boolean): Expression;
+  jsonStaticValue(argument: JsonValue, nullAsSQL?: boolean): Expression;
+  jsonExists(sideA: Expression, sideB: Expression): Expression;
+  jsonExistsAll(sideA: Expression, sideB: Expression): Expression;
+  jsonExistsAny(sideA: Expression, sideB: Expression): Expression;
+  jsonGet(sideA: Expression, sideB: Expression): Expression;
+  jsonGetPath(sideA: Expression, sideB: Expression): Expression;
+  jsonGetPathText(sideA: Expression, sideB: Expression): Expression;
+  jsonGetText(sideA: Expression, sideB: Expression): Expression;
+  like(identifier: Identifier, pattern: Expression): Expression;
+  lt(sideA: Expression, sideB: Expression): Expression;
+  lte(sideA: Expression, sideB: Expression): Expression;
+  neq(sideA: Expression, sideB: Expression): Expression;
+  not(expression: Expression): Expression;
+  notBetween(identifier: Identifier, from: Expression, to: Expression): Expression;
+  or(...expressions: Array<Falseable<Expression>>): Expression;
+  raw(expression: string): Expression;
+  select(...columns: Array<Falseable<Expression>>): BuilderSelect;
+  staticValue(argument: ValueExtended): Expression;
+  union(...queries: Expression[]): BuilderSetOperation;
+  unionAll(...queries: Expression[]): BuilderSetOperation;
+  intersect(...queries: Expression[]): BuilderSetOperation;
+  except(...queries: Expression[]): BuilderSetOperation;
+  update(table: Identifier): BuilderUpdate;
+  conflict(columns?: Identifier[], where?: Expression): BuilderConflict;
+  excluded(identifier: Identifier): Expression;
+  value(argument: Value): Expression;
+  op(operator: MathOperator, expressionA: Expression, expressionB: Expression): Expression;
+  sum(expressionA: Expression, expressionB: Expression): Expression;
+  sub(expressionA: Expression, expressionB: Expression): Expression;
+  mul(expressionA: Expression, expressionB: Expression): Expression;
+  div(expressionA: Expression, expressionB: Expression): Expression;
+  mod(expressionA: Expression, expressionB: Expression): Expression;
+  pow(expressionA: Expression, expressionB: Expression): Expression;
+};
+//#endregion
+export { functions as default };

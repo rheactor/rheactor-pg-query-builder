@@ -1,4 +1,4 @@
-import type { Falseable } from "@/types/Falseable";
+﻿import type { Falseable } from "#/types/Falseable";
 
 export function isFalseable<T extends Falseable<unknown>>(
   value: Falseable<T>,

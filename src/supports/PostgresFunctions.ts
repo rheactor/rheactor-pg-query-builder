@@ -1,4 +1,4 @@
-import type { Expression } from "@/types/Expression";
+﻿import type { Expression } from "#/types/Expression";
 
 function customCall(identifier: string, ...functionArguments: Expression[]) {
   return { type: "CALL", identifier, functionArguments } as const;

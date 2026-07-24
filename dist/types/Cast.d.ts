@@ -1,1 +1,0 @@
-export type Cast = "BIGINT" | "BOOLEAN" | "BYTEA" | "DATE" | "DOUBLE PRECISION" | "INTEGER" | "JSON" | "JSONB" | "NUMERIC" | "REAL" | "SMALLINT" | "TEXT" | "TIMESTAMP" | "VARCHAR";

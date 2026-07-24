@@ -1,8 +1,8 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 
-import type { Builder } from "@/Builder.js";
-import sql from "@/index.js";
-import type { Value } from "@/types/Value.js";
+import type { Builder } from "#/Builder";
+import sql from "#/index";
+import type { Value } from "#/types/Value";
 
 function alwaysFalse() {
   return false;

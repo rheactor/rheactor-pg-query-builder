@@ -1,1 +1,1 @@
-export type Value = boolean | number | string | null;
+﻿export type Value = boolean | number | string | null;

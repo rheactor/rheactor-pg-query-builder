@@ -1,21 +1,21 @@
-import type { Builder } from "@/Builder.js";
-import type { Cast } from "@/types/Cast.js";
-import type { Collate } from "@/types/Collate.js";
-import type { ComparisonOperator, Expression, MathOperator } from "@/types/Expression.js";
-import type { Falseable } from "@/types/Falseable.js";
-import type { Identifier } from "@/types/Identifier.js";
-import type { JsonValue } from "@/types/JsonValue.js";
-import type { Value } from "@/types/Value.js";
-import type { ValueExtended } from "@/types/ValueExtended.js";
+﻿import type { Builder } from "#/Builder";
+import type { Cast } from "#/types/Cast";
+import type { Collate } from "#/types/Collate";
+import type { ComparisonOperator, Expression, MathOperator } from "#/types/Expression";
+import type { Falseable } from "#/types/Falseable";
+import type { Identifier } from "#/types/Identifier";
+import type { JsonValue } from "#/types/JsonValue";
+import type { Value } from "#/types/Value";
+import type { ValueExtended } from "#/types/ValueExtended";
 
-import { BuilderCase } from "@/BuilderCase";
-import { BuilderConflict } from "@/BuilderConflict";
-import { BuilderDelete } from "@/BuilderDelete";
-import { BuilderInsert } from "@/BuilderInsert";
-import { BuilderSelect } from "@/BuilderSelect";
-import { BuilderSetOperation } from "@/BuilderSetOperation";
-import { BuilderUpdate } from "@/BuilderUpdate";
-import { call, customCall } from "@/supports/PostgresFunctions";
+import { BuilderCase } from "#/BuilderCase";
+import { BuilderConflict } from "#/BuilderConflict";
+import { BuilderDelete } from "#/BuilderDelete";
+import { BuilderInsert } from "#/BuilderInsert";
+import { BuilderSelect } from "#/BuilderSelect";
+import { BuilderSetOperation } from "#/BuilderSetOperation";
+import { BuilderUpdate } from "#/BuilderUpdate";
+import { call, customCall } from "#/supports/PostgresFunctions";
 
 const functions = {
   and(...expressions: Array<Falseable<Expression>>): Expression {

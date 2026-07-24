@@ -1,12 +1,12 @@
-import { joinOperations, operation } from "@/services/OperationService.js";
-import type { Operation } from "@/types/Operation.js";
+﻿import { joinOperations, operation } from "#/services/OperationService";
+import type { Operation } from "#/types/Operation";
 
-import type { Expression } from "@/types/Expression";
-import type { Falseable } from "@/types/Falseable";
-import type { Identifier } from "@/types/Identifier";
-import type { SampleMethod } from "@/types/SampleMethod";
+import type { Expression } from "#/types/Expression";
+import type { Falseable } from "#/types/Falseable";
+import type { Identifier } from "#/types/Identifier";
+import type { SampleMethod } from "#/types/SampleMethod";
 
-import { Builder } from "@/Builder";
+import { Builder } from "#/Builder";
 
 type OrderDirection = "ASC" | "DESC";
 type OrderNulls = "NULLS FIRST" | "NULLS LAST";

@@ -1,12 +1,12 @@
-import { joinOperations, operation } from "@/services/OperationService.js";
-import type { Operation } from "@/types/Operation.js";
+﻿import { joinOperations, operation } from "#/services/OperationService";
+import type { Operation } from "#/types/Operation";
 
-import type { Expression } from "@/types/Expression";
-import type { Falseable } from "@/types/Falseable";
-import type { Identifier } from "@/types/Identifier";
+import type { Expression } from "#/types/Expression";
+import type { Falseable } from "#/types/Falseable";
+import type { Identifier } from "#/types/Identifier";
 
-import { Builder } from "@/Builder";
-import { BuilderConflict } from "@/BuilderConflict";
+import { Builder } from "#/Builder";
+import { BuilderConflict } from "#/BuilderConflict";
 
 export class BuilderInsert extends Builder {
   private readonly onConflictBuilders: BuilderConflict[] = [];

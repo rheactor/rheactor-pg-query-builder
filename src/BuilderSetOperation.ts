@@ -1,7 +1,7 @@
-import { Builder } from "@/Builder.js";
-import { operation } from "@/services/OperationService.js";
-import type { Expression } from "@/types/Expression.js";
-import type { Operation } from "@/types/Operation.js";
+﻿import { Builder } from "#/Builder";
+import { operation } from "#/services/OperationService";
+import type { Expression } from "#/types/Expression";
+import type { Operation } from "#/types/Operation";
 
 export class BuilderSetOperation extends Builder {
   public constructor(

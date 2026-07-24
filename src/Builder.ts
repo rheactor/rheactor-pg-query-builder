@@ -1,14 +1,14 @@
-import type { Operation } from "@/types/Operation.js";
-import type { Value } from "@/types/Value.js";
+﻿import type { Operation } from "#/types/Operation";
+import type { Value } from "#/types/Value";
 
-import type { Expression } from "@/types/Expression";
-import type { Falseable } from "@/types/Falseable";
-import type { Identifier } from "@/types/Identifier";
-import type { JoinClause } from "@/types/Join";
-import type { SampleMethod } from "@/types/SampleMethod";
+import type { Expression } from "#/types/Expression";
+import type { Falseable } from "#/types/Falseable";
+import type { Identifier } from "#/types/Identifier";
+import type { JoinClause } from "#/types/Join";
+import type { SampleMethod } from "#/types/SampleMethod";
 
-import { isFalseable } from "@/services/FalseableService";
-import { joinOperations, operation } from "@/services/OperationService";
+import { isFalseable } from "#/services/FalseableService";
+import { joinOperations, operation } from "#/services/OperationService";
 
 export abstract class Builder {
   protected readonly columnsOperations: Operation[][] = [];

@@ -1,8 +1,8 @@
-import type { Expression } from "@/types/Expression.js";
-import type { Operation } from "@/types/Operation.js";
+﻿import type { Expression } from "#/types/Expression";
+import type { Operation } from "#/types/Operation";
 
-import { Builder } from "@/Builder";
-import { isFalseable } from "@/services/FalseableService";
+import { Builder } from "#/Builder";
+import { isFalseable } from "#/services/FalseableService";
 
 export function joinOperations(operations: Operation[][], joiner: string, includeParens: boolean) {
   const joinedOperations: Operation[] = [];
