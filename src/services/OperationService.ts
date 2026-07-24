@@ -232,6 +232,10 @@ export function operation(expression: Expression): Operation[] {
       return [...operation(expression.identifier), " = ", ...operation(expression.expression)];
     }
 
+    case "UNARY": {
+      return ["(", `${expression.operator} `, ...operation(expression.expression), ")"];
+    }
+
     case "OPERATOR":
     default: {
       return [

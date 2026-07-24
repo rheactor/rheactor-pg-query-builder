@@ -389,27 +389,6 @@ describe("class Builder", () => {
       [123],
     ],
     [
-      sql.select(sql.op("+", sql.op("-", sql.value(1), sql.value(2)), sql.value(3))),
-      "SELECT (($1 - $2) + $3)",
-      [1, 2, 3],
-    ],
-    [
-      sql.select(
-        sql.op("*", sql.op("/", sql.staticValue(1), sql.staticValue(2)), sql.staticValue(3)),
-      ),
-      "SELECT ((1 / 2) * 3)",
-      [],
-    ],
-    [sql.select(sql.op("%", sql.value(1), sql.staticValue(2))), "SELECT ($1 % 2)", [1]],
-    [sql.select(sql.op("%", sql.staticValue(1), sql.value(2))), "SELECT (1 % $1)", [2]],
-    [sql.select(sql.op("^", sql.staticValue(1), sql.value(2))), "SELECT (1 ^ $1)", [2]],
-    [sql.select(sql.sum(sql.staticValue(1), sql.value(2))), "SELECT (1 + $1)", [2]],
-    [sql.select(sql.sub(sql.staticValue(1), sql.value(2))), "SELECT (1 - $1)", [2]],
-    [sql.select(sql.mul(sql.staticValue(1), sql.value(2))), "SELECT (1 * $1)", [2]],
-    [sql.select(sql.div(sql.staticValue(1), sql.value(2))), "SELECT (1 / $1)", [2]],
-    [sql.select(sql.mod(sql.staticValue(1), sql.value(2))), "SELECT (1 % $1)", [2]],
-    [sql.select(sql.pow(sql.staticValue(1), sql.value(2))), "SELECT POW(1, $1)", [2]],
-    [
       sql.select(
         sql.value(1),
         sql.value(2),

@@ -7,7 +7,9 @@ import type { JsonValue } from "#/types/JsonValue";
 import type { Value } from "#/types/Value";
 import type { ValueExtended } from "#/types/ValueExtended";
 
-export type MathOperator = "-" | "*" | "/" | "%" | "^" | "+";
+export type MathOperator = "-" | "*" | "/" | "&" | "#" | "%" | "^" | "+" | "<<" | ">>" | "|";
+
+export type UnaryOperator = "-" | "+" | "~";
 
 export type ComparisonOperator = "!=" | "<" | "<=" | "=" | ">" | ">=";
 
@@ -43,6 +45,11 @@ export type Expression =
       operator: MathOperator;
       expressionA: Expression;
       expressionB: Expression;
+    }
+  | {
+      type: "UNARY";
+      operator: UnaryOperator;
+      expression: Expression;
     }
   | {
       type: LogicalOperator;

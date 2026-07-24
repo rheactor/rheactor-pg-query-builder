@@ -21,7 +21,8 @@ type Value = boolean | number | string | null;
 type ValueExtended = Value | bigint;
 //#endregion
 //#region src/types/Expression.d.ts
-type MathOperator = "-" | "*" | "/" | "%" | "^" | "+";
+type MathOperator = "-" | "*" | "/" | "&" | "#" | "%" | "^" | "+" | "<<" | ">>" | "|";
+type UnaryOperator = "-" | "+" | "~";
 type ComparisonOperator = "!=" | "<" | "<=" | "=" | ">" | ">=";
 type JsonOperator = "->" | "->>" | "?" | "?&" | "?|" | "#>" | "#>>";
 type ContainmentOperator = "@>" | "<@";
@@ -45,6 +46,10 @@ type Expression = Builder | Identifier | {
   operator: MathOperator;
   expressionA: Expression;
   expressionB: Expression;
+} | {
+  type: "UNARY";
+  operator: UnaryOperator;
+  expression: Expression;
 } | {
   type: LogicalOperator;
   expressions: Array<Falseable<Expression>>;
@@ -259,7 +264,18 @@ declare class BuilderUpdate extends Builder {
 declare function call(identifier: string & {}, ...functionArguments: Expression[]): Expression;
 declare function call(identifier: "NUM_NONNULLS", ...expressions: Expression[]): Expression;
 declare function call(identifier: "NUM_NULLS", ...expressions: Expression[]): Expression;
-declare function call(identifier: "ABS", value: Expression): Expression;
+declare function call(identifier: "ABS" | "CEIL" | "CEILING" | "EXP" | "FACTORIAL" | "FLOOR" | "LN" | "LOG" | "LOG10" | "MIN_SCALE" | "ROUND" | "SCALE" | "SETSEED" | "SIGN" | "SQRT" | "TRIM_SCALE" | "TRUNC", value: Expression): Expression;
+declare function call(identifier: "ACOS" | "ACOSD" | "ACOSH" | "ASIN" | "ASIND" | "ASINH" | "ATAN" | "ATAND" | "ATANH" | "CBRT" | "COS" | "COSD" | "COSH" | "COT" | "COTD" | "DEGREES" | "ERF" | "ERFC" | "GAMMA" | "LGAMMA" | "RADIANS" | "SIN" | "SIND" | "SINH" | "TAN" | "TAND" | "TANH", X: Expression): Expression;
+declare function call(identifier: "ATAN2" | "ATAN2D" | "DIV" | "MOD", Y: Expression, X: Expression): Expression;
+declare function call(identifier: "GCD" | "LCM" | "POW" | "POWER", a: Expression, b: Expression): Expression;
+declare function call(identifier: "LOG", B: Expression, X: Expression): Expression;
+declare function call(identifier: "PI" | "RANDOM_NORMAL" | "RANDOM"): Expression;
+declare function call(identifier: "RANDOM", min: Expression, max: Expression): Expression;
+declare function call(identifier: "RANDOM_NORMAL", mean: Expression): Expression;
+declare function call(identifier: "RANDOM_NORMAL", mean: Expression, stddev: Expression): Expression;
+declare function call(identifier: "ROUND" | "TRUNC", v: Expression, s: Expression): Expression;
+declare function call(identifier: "WIDTH_BUCKET", operand: Expression, low: Expression, high: Expression, count: Expression): Expression;
+declare function call(identifier: "WIDTH_BUCKET", operand: Expression, thresholds: Expression): Expression;
 declare function call(identifier: "COALESCE", ...expressions: Expression[]): Expression;
 declare function call(identifier: "GREATEST", ...expressions: Expression[]): Expression;
 declare function call(identifier: "LEAST", ...expressions: Expression[]): Expression;
@@ -314,39 +330,6 @@ declare function call(identifier: "TRANSLATE", string: Expression, from: Express
 declare function call(identifier: "TRIM", value: Expression): Expression;
 declare function call(identifier: "UNISTR", value: Expression): Expression;
 declare function call(identifier: "LOWER" | "UPPER", value: Expression): Expression;
-declare function call(identifier: "ACOS" | "ACOSD" | "ASIN" | "ASIND" | "ATAN" | "ATAND", X: Expression): Expression;
-declare function call(identifier: "ACOSH" | "ASINH" | "ATANH", X: Expression): Expression;
-declare function call(identifier: "ATAN2" | "ATAN2D", Y: Expression, X: Expression): Expression;
-declare function call(identifier: "CBRT", X: Expression): Expression;
-declare function call(identifier: "CEIL" | "CEILING" | "FLOOR", value: Expression): Expression;
-declare function call(identifier: "COS" | "COSD" | "COT" | "COTD", X: Expression): Expression;
-declare function call(identifier: "COSH" | "SINH" | "TANH", X: Expression): Expression;
-declare function call(identifier: "DEGREES", X: Expression): Expression;
-declare function call(identifier: "DIV", Y: Expression, X: Expression): Expression;
-declare function call(identifier: "ERF" | "ERFC", X: Expression): Expression;
-declare function call(identifier: "EXP", value: Expression): Expression;
-declare function call(identifier: "FACTORIAL", value: Expression): Expression;
-declare function call(identifier: "GAMMA" | "LGAMMA", X: Expression): Expression;
-declare function call(identifier: "GCD" | "LCM", a: Expression, b: Expression): Expression;
-declare function call(identifier: "LN", value: Expression): Expression;
-declare function call(identifier: "LOG", value: Expression): Expression;
-declare function call(identifier: "LOG", B: Expression, X: Expression): Expression;
-declare function call(identifier: "LOG10", value: Expression): Expression;
-declare function call(identifier: "MOD", Y: Expression, X: Expression): Expression;
-declare function call(identifier: "PI"): Expression;
-declare function call(identifier: "POW" | "POWER", a: Expression, b: Expression): Expression;
-declare function call(identifier: "RADIANS", X: Expression): Expression;
-declare function call(identifier: "RANDOM"): Expression;
-declare function call(identifier: "ROUND", value: Expression): Expression;
-declare function call(identifier: "ROUND", value: Expression, decimals: Expression): Expression;
-declare function call(identifier: "SCALE", value: Expression): Expression;
-declare function call(identifier: "SETSEED", value: Expression): Expression;
-declare function call(identifier: "SIGN", value: Expression): Expression;
-declare function call(identifier: "SIN" | "SIND" | "TAN" | "TAND", X: Expression): Expression;
-declare function call(identifier: "SQRT", value: Expression): Expression;
-declare function call(identifier: "TRUNC", value: Expression): Expression;
-declare function call(identifier: "TRUNC", value: Expression, decimals: Expression): Expression;
-declare function call(identifier: "WIDTH_BUCKET", operand: Expression, low: Expression, high: Expression, count: Expression): Expression;
 declare function call(identifier: "AGE", timestamp: Expression): Expression;
 declare function call(identifier: "AGE", timestampA: Expression, timestampB: Expression): Expression;
 declare function call(identifier: "CLOCK_TIMESTAMP"): Expression;
@@ -506,6 +489,7 @@ declare const functions: {
   excluded(identifier: Identifier): Expression;
   value(argument: Value): Expression;
   op(operator: MathOperator, expressionA: Expression, expressionB: Expression): Expression;
+  opUnary(operator: UnaryOperator, expression: Expression): Expression;
   sum(expressionA: Expression, expressionB: Expression): Expression;
   sub(expressionA: Expression, expressionB: Expression): Expression;
   mul(expressionA: Expression, expressionB: Expression): Expression;

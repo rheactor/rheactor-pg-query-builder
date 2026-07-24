@@ -6,8 +6,81 @@ function call(identifier: string & {}, ...functionArguments: Expression[]): Expr
 function call(identifier: "NUM_NONNULLS", ...expressions: Expression[]): Expression;
 function call(identifier: "NUM_NULLS", ...expressions: Expression[]): Expression;
 
+// https://www.postgresql.org/docs/current/functions-math.html
+function call(
+  identifier:
+    | "ABS"
+    | "CEIL"
+    | "CEILING"
+    | "EXP"
+    | "FACTORIAL"
+    | "FLOOR"
+    | "LN"
+    | "LOG"
+    | "LOG10"
+    | "MIN_SCALE"
+    | "ROUND"
+    | "SCALE"
+    | "SETSEED"
+    | "SIGN"
+    | "SQRT"
+    | "TRIM_SCALE"
+    | "TRUNC",
+  value: Expression,
+): Expression;
+function call(
+  identifier:
+    | "ACOS"
+    | "ACOSD"
+    | "ACOSH"
+    | "ASIN"
+    | "ASIND"
+    | "ASINH"
+    | "ATAN"
+    | "ATAND"
+    | "ATANH"
+    | "CBRT"
+    | "COS"
+    | "COSD"
+    | "COSH"
+    | "COT"
+    | "COTD"
+    | "DEGREES"
+    | "ERF"
+    | "ERFC"
+    | "GAMMA"
+    | "LGAMMA"
+    | "RADIANS"
+    | "SIN"
+    | "SIND"
+    | "SINH"
+    | "TAN"
+    | "TAND"
+    | "TANH",
+  X: Expression,
+): Expression;
+function call(
+  identifier: "ATAN2" | "ATAN2D" | "DIV" | "MOD",
+  Y: Expression,
+  X: Expression,
+): Expression;
+function call(identifier: "GCD" | "LCM" | "POW" | "POWER", a: Expression, b: Expression): Expression;
+function call(identifier: "LOG", B: Expression, X: Expression): Expression;
+function call(identifier: "PI" | "RANDOM_NORMAL" | "RANDOM"): Expression;
+function call(identifier: "RANDOM", min: Expression, max: Expression): Expression;
+function call(identifier: "RANDOM_NORMAL", mean: Expression): Expression;
+function call(identifier: "RANDOM_NORMAL", mean: Expression, stddev: Expression): Expression;
+function call(identifier: "ROUND" | "TRUNC", v: Expression, s: Expression): Expression;
+function call(
+  identifier: "WIDTH_BUCKET",
+  operand: Expression,
+  low: Expression,
+  high: Expression,
+  count: Expression,
+): Expression;
+function call(identifier: "WIDTH_BUCKET", operand: Expression, thresholds: Expression): Expression;
+
 // Common / General Functions
-function call(identifier: "ABS", value: Expression): Expression;
 function call(identifier: "COALESCE", ...expressions: Expression[]): Expression;
 function call(identifier: "GREATEST", ...expressions: Expression[]): Expression;
 function call(identifier: "LEAST", ...expressions: Expression[]): Expression;
@@ -129,50 +202,6 @@ function call(
 function call(identifier: "TRIM", value: Expression): Expression;
 function call(identifier: "UNISTR", value: Expression): Expression;
 function call(identifier: "LOWER" | "UPPER", value: Expression): Expression;
-
-// Math / Trig Functions
-function call(
-  identifier: "ACOS" | "ACOSD" | "ASIN" | "ASIND" | "ATAN" | "ATAND",
-  X: Expression,
-): Expression;
-function call(identifier: "ACOSH" | "ASINH" | "ATANH", X: Expression): Expression;
-function call(identifier: "ATAN2" | "ATAN2D", Y: Expression, X: Expression): Expression;
-function call(identifier: "CBRT", X: Expression): Expression;
-function call(identifier: "CEIL" | "CEILING" | "FLOOR", value: Expression): Expression;
-function call(identifier: "COS" | "COSD" | "COT" | "COTD", X: Expression): Expression;
-function call(identifier: "COSH" | "SINH" | "TANH", X: Expression): Expression;
-function call(identifier: "DEGREES", X: Expression): Expression;
-function call(identifier: "DIV", Y: Expression, X: Expression): Expression;
-function call(identifier: "ERF" | "ERFC", X: Expression): Expression;
-function call(identifier: "EXP", value: Expression): Expression;
-function call(identifier: "FACTORIAL", value: Expression): Expression;
-function call(identifier: "GAMMA" | "LGAMMA", X: Expression): Expression;
-function call(identifier: "GCD" | "LCM", a: Expression, b: Expression): Expression;
-function call(identifier: "LN", value: Expression): Expression;
-function call(identifier: "LOG", value: Expression): Expression;
-function call(identifier: "LOG", B: Expression, X: Expression): Expression;
-function call(identifier: "LOG10", value: Expression): Expression;
-function call(identifier: "MOD", Y: Expression, X: Expression): Expression;
-function call(identifier: "PI"): Expression;
-function call(identifier: "POW" | "POWER", a: Expression, b: Expression): Expression;
-function call(identifier: "RADIANS", X: Expression): Expression;
-function call(identifier: "RANDOM"): Expression;
-function call(identifier: "ROUND", value: Expression): Expression;
-function call(identifier: "ROUND", value: Expression, decimals: Expression): Expression;
-function call(identifier: "SCALE", value: Expression): Expression;
-function call(identifier: "SETSEED", value: Expression): Expression;
-function call(identifier: "SIGN", value: Expression): Expression;
-function call(identifier: "SIN" | "SIND" | "TAN" | "TAND", X: Expression): Expression;
-function call(identifier: "SQRT", value: Expression): Expression;
-function call(identifier: "TRUNC", value: Expression): Expression;
-function call(identifier: "TRUNC", value: Expression, decimals: Expression): Expression;
-function call(
-  identifier: "WIDTH_BUCKET",
-  operand: Expression,
-  low: Expression,
-  high: Expression,
-  count: Expression,
-): Expression;
 
 // Date / Time Functions
 function call(identifier: "AGE", timestamp: Expression): Expression;

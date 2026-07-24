@@ -10,7 +10,12 @@ import { call } from "#/supports/PostgresFunctions";
 import type { Builder } from "#/Builder";
 import type { Cast } from "#/types/Cast";
 import type { Collate } from "#/types/Collate";
-import type { ComparisonOperator, Expression, MathOperator } from "#/types/Expression";
+import type {
+  ComparisonOperator,
+  Expression,
+  MathOperator,
+  UnaryOperator,
+} from "#/types/Expression";
 import type { Falseable } from "#/types/Falseable";
 import type { Identifier } from "#/types/Identifier";
 import type { JsonValue } from "#/types/JsonValue";
@@ -241,6 +246,10 @@ const functions = {
 
   op(operator: MathOperator, expressionA: Expression, expressionB: Expression): Expression {
     return { type: "OPERATOR", operator, expressionA, expressionB };
+  },
+
+  opUnary(operator: UnaryOperator, expression: Expression): Expression {
+    return { type: "UNARY", operator, expression };
   },
 
   sum(expressionA: Expression, expressionB: Expression) {
