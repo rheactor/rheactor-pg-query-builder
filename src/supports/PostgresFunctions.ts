@@ -64,7 +64,11 @@ function call(
   Y: Expression,
   X: Expression,
 ): Expression;
-function call(identifier: "GCD" | "LCM" | "POW" | "POWER", a: Expression, b: Expression): Expression;
+function call(
+  identifier: "GCD" | "LCM" | "POW" | "POWER",
+  a: Expression,
+  b: Expression,
+): Expression;
 function call(identifier: "LOG", B: Expression, X: Expression): Expression;
 function call(identifier: "PI" | "RANDOM_NORMAL" | "RANDOM"): Expression;
 function call(identifier: "RANDOM", min: Expression, max: Expression): Expression;

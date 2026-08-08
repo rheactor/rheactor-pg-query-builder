@@ -1,7 +1,7 @@
 {
   "name": "@rheactor/rheactor-pg-query-builder",
   "version": "1.0.0",
-  "description": "Rheactor Query Builder for PostgreSQL.",
+  "description": "Rheactor PostgreSQL Query Builder.",
   "license": "MIT",
   "files": [
     "dist"
@@ -33,11 +33,11 @@
   "devDependencies": {
     "@rheactor/eslint-config-rheactor": "github:rheactor/eslint-config-rheactor",
     "@rheactor/rheactor-pg-connector": "github:rheactor/rheactor-pg-connector",
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.2.0",
     "@vitest/coverage-v8": "^4.1.10",
-    "@vitest/eslint-plugin": "^1.6.24",
-    "eslint": "^10.7.0",
-    "oxfmt": "^0.60.0",
+    "@vitest/eslint-plugin": "^1.6.26",
+    "eslint": "^10.8.1",
+    "oxfmt": "^0.62.0",
     "tsdown": "^0.22.14",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10"

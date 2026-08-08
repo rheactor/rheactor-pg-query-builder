@@ -533,7 +533,9 @@ describe("Mathematical Functions and Operators (9.3)", () => {
       // Table 9.6 - Random Functions: SETSEED (void result)
       {
         label: "SETSEED(0.12345)",
-        builder: sql.select().selectAliased(sql.call("SETSEED", sql.staticValue(0.12345)), "result"),
+        builder: sql
+          .select()
+          .selectAliased(sql.call("SETSEED", sql.staticValue(0.12345)), "result"),
         query: 'SELECT SETSEED(0.12345) AS "result"',
         expected: "",
       },
@@ -693,7 +695,10 @@ describe("Mathematical Functions and Operators (9.3)", () => {
 
   describe("Table 9.6 - Random Functions (non-deterministic)", () => {
     it("RANDOM()", async () => {
-      const { query, parameters } = sql.select().selectAliased(sql.call("RANDOM"), "result").build();
+      const { query, parameters } = sql
+        .select()
+        .selectAliased(sql.call("RANDOM"), "result")
+        .build();
 
       expect(query).toBe('SELECT RANDOM() AS "result"');
 
