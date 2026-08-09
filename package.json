@@ -18,28 +18,25 @@
     }
   },
   "scripts": {
-    "build": "tsdown",
-    "lint": "bun run typecheck && bun run eslint && bun run oxfmt",
-    "lint:fix": "bun run typecheck && bun run eslint:fix && bun run oxfmt:fix",
-    "typecheck": "tsc --noEmit",
-    "oxfmt": "oxfmt --check ./src ./tests ./*.mjs ./*.json",
-    "oxfmt:fix": "oxfmt --write ./src ./tests ./*.mjs ./*.json",
-    "eslint": "eslint ./src ./tests ./*.mjs",
-    "eslint:fix": "eslint --fix ./src ./tests ./*.mjs",
+    "build": "bun run lint && tsdown",
+    "lint": "bun run typecheck && bun run oxlint && bun run oxfmt",
+    "lint:fix": "bun run typecheck && bun run oxlint:fix && bun run oxfmt:fix",
+    "oxfmt": "oxfmt --check ./src ./tests ./*.json",
+    "oxfmt:fix": "oxfmt --write ./src ./tests ./*.json",
+    "oxlint": "oxlint ./src ./tests",
+    "oxlint:fix": "oxlint --fix ./src ./tests",
     "test": "vitest --run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@rheactor/eslint-config-rheactor": "github:rheactor/eslint-config-rheactor",
+    "@rheactor/rheactor-oxc-config": "github:rheactor/rheactor-oxc-config",
     "@rheactor/rheactor-pg-connector": "github:rheactor/rheactor-pg-connector",
     "@types/node": "^26.2.0",
-    "@vitest/coverage-v8": "^4.1.10",
-    "@vitest/eslint-plugin": "^1.6.26",
-    "eslint": "^10.8.1",
     "oxfmt": "^0.62.0",
+    "oxlint": "^1.77.0",
     "tsdown": "^0.22.14",
-    "typescript": "^6.0.3",
+    "typescript": "^7.0.2",
     "vitest": "^4.1.10"
   }
 }

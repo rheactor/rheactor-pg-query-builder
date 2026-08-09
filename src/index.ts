@@ -1,3 +1,4 @@
+import type { Builder } from "#/Builder";
 import { BuilderCase } from "#/BuilderCase";
 import { BuilderConflict } from "#/BuilderConflict";
 import { BuilderDelete } from "#/BuilderDelete";
@@ -6,8 +7,6 @@ import { BuilderSelect } from "#/BuilderSelect";
 import { BuilderSetOperation } from "#/BuilderSetOperation";
 import { BuilderUpdate } from "#/BuilderUpdate";
 import { call } from "#/supports/PostgresFunctions";
-
-import type { Builder } from "#/Builder";
 import type { Cast } from "#/types/Cast";
 import type { Collate } from "#/types/Collate";
 import type {
@@ -129,14 +128,12 @@ const functions = {
     return functions.not({ type: "IS NULL", identifier });
   },
 
-  // eslint-disable-next-line unicorn/consistent-boolean-name
   jsonValue(argument: JsonValue, nullAsSQL = false): Expression {
     return nullAsSQL && argument === null
       ? { type: "VALUE", argument }
       : { type: "JSON", argument };
   },
 
-  // eslint-disable-next-line unicorn/consistent-boolean-name
   jsonStaticValue(argument: JsonValue, nullAsSQL = false): Expression {
     return {
       type: "STATIC",

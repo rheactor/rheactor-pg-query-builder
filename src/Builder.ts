@@ -1,6 +1,6 @@
 import { isFalseable } from "#/services/FalseableService";
+// oxlint-disable-next-line import/no-cycle
 import { joinOperations, operation } from "#/services/OperationService";
-
 import type { Expression } from "#/types/Expression";
 import type { Falseable } from "#/types/Falseable";
 import type { Identifier } from "#/types/Identifier";
@@ -28,7 +28,6 @@ export abstract class Builder {
 
   private offsetExpression?: Expression;
 
-  // eslint-disable-next-line unicorn/consistent-boolean-name
   public conditional(condition: boolean, then: (builder: this) => void) {
     if (condition) {
       then(this);

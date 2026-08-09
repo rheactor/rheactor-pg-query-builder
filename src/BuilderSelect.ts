@@ -1,6 +1,5 @@
 import { Builder } from "#/Builder";
 import { joinOperations, operation } from "#/services/OperationService";
-
 import type { Expression } from "#/types/Expression";
 import type { Falseable } from "#/types/Falseable";
 import type { Identifier } from "#/types/Identifier";
@@ -33,7 +32,6 @@ export class BuilderSelect extends Builder {
     return this.internalColumnAliased(...args);
   }
 
-  // eslint-disable-next-line unicorn/consistent-boolean-name
   public distinct(mode = true) {
     this.selectDistinct = mode;
 

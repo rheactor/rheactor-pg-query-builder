@@ -1,6 +1,6 @@
+// oxlint-disable-next-line import/no-cycle
 import { Builder } from "#/Builder";
 import { isFalseable } from "#/services/FalseableService";
-
 import type { Expression } from "#/types/Expression";
 import type { Operation } from "#/types/Operation";
 
@@ -38,7 +38,7 @@ export function operation(expression: Expression): Operation[] {
       return [...operation(table!), ".", ...operation(column! || "*")];
     }
 
-    const identifier = expression.replaceAll(/["\\`]/g, "");
+    const identifier = expression.replaceAll(/["\\`]/gv, "");
 
     return [`"${identifier}"`];
   }

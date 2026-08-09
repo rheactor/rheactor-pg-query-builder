@@ -1,6 +1,5 @@
 import { Builder } from "#/Builder";
 import { joinOperations, operation } from "#/services/OperationService";
-
 import type { Expression } from "#/types/Expression";
 import type { Identifier } from "#/types/Identifier";
 import type { Operation } from "#/types/Operation";

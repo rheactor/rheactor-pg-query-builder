@@ -1,9 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import sql from "#/index";
-import { client } from "#tests/fixtures/client";
-
 import type { Expression } from "#/types/Expression";
+import { client } from "#tests/fixtures/client";
 
 describe("Logical Operators (9.1)", () => {
   const TRUE = sql.staticValue(true);
@@ -141,6 +140,8 @@ describe("Logical Operators (9.1)", () => {
   ];
 
   it.each(tests)("$label", async (test) => {
+    expect.assertions(2);
+
     expect(sql.select(test.expression).build()).toStrictEqual({
       query: test.query,
       parameters: [],
@@ -149,6 +150,6 @@ describe("Logical Operators (9.1)", () => {
     const { query, parameters } = sql.select().selectAliased(test.expression, "result").build();
     const evaluated = await client.query<ResultTruth>(query, parameters);
 
-    expect(evaluated.rows[0]?.result).toBe(test.expected);
+    expect(evaluated.rows.at(0)?.result).toBe(test.expected);
   });
 });

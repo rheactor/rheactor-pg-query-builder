@@ -5,6 +5,8 @@ import { client } from "#tests/fixtures/client";
 
 describe("PostgresFunctions (integration)", () => {
   it("SELECT TRUE", async () => {
+    expect.assertions(1);
+
     const { query, parameters } = sql.select().build();
 
     const result = await client.query(query, parameters);

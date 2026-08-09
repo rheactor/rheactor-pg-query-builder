@@ -1,7 +1,6 @@
 import { Builder } from "#/Builder";
 import { BuilderConflict } from "#/BuilderConflict";
 import { joinOperations, operation } from "#/services/OperationService";
-
 import type { Expression } from "#/types/Expression";
 import type { Falseable } from "#/types/Falseable";
 import type { Identifier } from "#/types/Identifier";

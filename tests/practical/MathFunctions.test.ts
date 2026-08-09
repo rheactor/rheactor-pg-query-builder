@@ -1,11 +1,9 @@
-/* eslint-disable unicorn/max-nested-calls */
 import { describe, expect, it } from "vitest";
 
-import sql from "#/index";
-import { client } from "#tests/fixtures/client";
-
 import type { Builder } from "#/Builder";
+import sql from "#/index";
 import type { Value } from "#/types/Value";
+import { client } from "#tests/fixtures/client";
 
 describe("Mathematical Functions and Operators (9.3)", () => {
   type MathResult = number | string;
@@ -682,6 +680,8 @@ describe("Mathematical Functions and Operators (9.3)", () => {
     ];
 
     it.each(tests)("$label", async (test) => {
+      expect.assertions(2);
+
       expect(test.builder.build()).toStrictEqual({
         query: test.query,
         parameters: [],
@@ -689,12 +689,14 @@ describe("Mathematical Functions and Operators (9.3)", () => {
 
       const evaluated = await client.query<ResultRow>(test.query, []);
 
-      expect(evaluated.rows[0]?.result).toBe(test.expected);
+      expect(evaluated.rows.at(0)?.result).toBe(test.expected);
     });
   });
 
   describe("Table 9.6 - Random Functions (non-deterministic)", () => {
     it("RANDOM()", async () => {
+      expect.assertions(3);
+
       const { query, parameters } = sql
         .select()
         .selectAliased(sql.call("RANDOM"), "result")
@@ -703,13 +705,15 @@ describe("Mathematical Functions and Operators (9.3)", () => {
       expect(query).toBe('SELECT RANDOM() AS "result"');
 
       const evaluated = await client.query<ResultRow>(query, parameters);
-      const result = evaluated.rows[0]?.result as number;
+      const result = evaluated.rows.at(0)?.result as number;
 
       expect(result).toBeGreaterThanOrEqual(0);
       expect(result).toBeLessThan(1);
     });
 
     it("RANDOM(1, 10)", async () => {
+      expect.assertions(4);
+
       const { query, parameters } = sql
         .select()
         .selectAliased(sql.call("RANDOM", sql.staticValue(1), sql.staticValue(10)), "result")
@@ -718,7 +722,7 @@ describe("Mathematical Functions and Operators (9.3)", () => {
       expect(query).toBe('SELECT RANDOM(1, 10) AS "result"');
 
       const evaluated = await client.query<ResultRow>(query, parameters);
-      const result = evaluated.rows[0]?.result as number;
+      const result = evaluated.rows.at(0)?.result as number;
 
       expect(Number.isSafeInteger(result)).toBe(true);
       expect(result).toBeGreaterThanOrEqual(1);
@@ -726,6 +730,8 @@ describe("Mathematical Functions and Operators (9.3)", () => {
     });
 
     it("RANDOM_NORMAL(0, 1)", async () => {
+      expect.assertions(2);
+
       const { query, parameters } = sql
         .select()
         .selectAliased(sql.call("RANDOM_NORMAL", sql.staticValue(0), sql.staticValue(1)), "result")
@@ -735,7 +741,7 @@ describe("Mathematical Functions and Operators (9.3)", () => {
 
       const evaluated = await client.query<ResultRow>(query, parameters);
 
-      expect(typeof evaluated.rows[0]?.result).toBe("number");
+      expect(evaluated.rows.at(0)?.result).toBeTypeOf("number");
     });
   });
 });

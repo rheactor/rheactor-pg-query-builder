@@ -1,3 +1,4 @@
+// oxlint-disable typescript/unified-signatures
 import type { Expression } from "#/types/Expression";
 
 function call(identifier: string & {}, ...functionArguments: Expression[]): Expression;
@@ -57,24 +58,24 @@ function call(
     | "TAN"
     | "TAND"
     | "TANH",
-  X: Expression,
+  x: Expression,
 ): Expression;
 function call(
   identifier: "ATAN2" | "ATAN2D" | "DIV" | "MOD",
-  Y: Expression,
-  X: Expression,
+  y: Expression,
+  x: Expression,
 ): Expression;
 function call(
   identifier: "GCD" | "LCM" | "POW" | "POWER",
   a: Expression,
   b: Expression,
 ): Expression;
-function call(identifier: "LOG", B: Expression, X: Expression): Expression;
+function call(identifier: "LOG", b: Expression, x: Expression): Expression;
 function call(identifier: "PI" | "RANDOM_NORMAL" | "RANDOM"): Expression;
 function call(identifier: "RANDOM", min: Expression, max: Expression): Expression;
 function call(identifier: "RANDOM_NORMAL", mean: Expression): Expression;
 function call(identifier: "RANDOM_NORMAL", mean: Expression, stddev: Expression): Expression;
-function call(identifier: "ROUND" | "TRUNC", v: Expression, s: Expression): Expression;
+function call(identifier: "ROUND" | "TRUNC", value: Expression, size: Expression): Expression;
 function call(
   identifier: "WIDTH_BUCKET",
   operand: Expression,

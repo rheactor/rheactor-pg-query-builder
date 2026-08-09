@@ -1,11 +1,9 @@
-/* eslint-disable unicorn/max-nested-calls */
 import { describe, expect, it } from "vitest";
 
-import sql from "#/index";
-import { client } from "#tests/fixtures/client";
-
 import type { Builder } from "#/Builder";
+import sql from "#/index";
 import type { Value } from "#/types/Value";
+import { client } from "#tests/fixtures/client";
 
 function literalColumn(value: string) {
   return sql.raw(`(SELECT ${value} AS v)`);
@@ -563,6 +561,8 @@ describe("Comparison Functions and Operators (9.2)", () => {
     ];
 
     it.each(tests)("$label", async (test) => {
+      expect.assertions(2);
+
       expect(test.builder.build()).toStrictEqual({
         query: test.query,
         parameters: [],
@@ -570,7 +570,7 @@ describe("Comparison Functions and Operators (9.2)", () => {
 
       const evaluated = await client.query<ResultRow>(test.query, []);
 
-      expect(evaluated.rows[0]?.result).toBe(test.expected);
+      expect(evaluated.rows.at(0)?.result).toBe(test.expected);
     });
   });
 });

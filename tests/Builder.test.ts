@@ -1,9 +1,7 @@
-/* eslint-disable unicorn/max-nested-calls */
 import { describe, expect, it } from "vitest";
 
-import sql from "#/index";
-
 import type { Builder } from "#/Builder";
+import sql from "#/index";
 import type { Value } from "#/types/Value";
 
 function shouldAlwaysFalse() {
@@ -30,7 +28,7 @@ describe("class Builder", () => {
     [sql.select("test", undefined), 'SELECT "test"', []],
     [sql.select("test"), 'SELECT "test"', []],
     [sql.select('"test"'), 'SELECT "test"', []],
-    [sql.select('"test\\"'), 'SELECT "test"', []],
+    [sql.select(String.raw`"test\"`), 'SELECT "test"', []],
     [sql.select("test", "test"), 'SELECT "test", "test"', []],
     [sql.select("test1", "test2"), 'SELECT "test1", "test2"', []],
     [sql.select(sql.value(123)), "SELECT $1", [123]],
@@ -256,12 +254,16 @@ describe("class Builder", () => {
     ],
     [sql.select().where(sql.staticValue(null)), "SELECT TRUE WHERE NULL", []],
     [
-      sql.select().conditional(false, (builder) => builder.where(sql.value(true))),
+      sql.select().conditional(false, (builder) => {
+        builder.where(sql.value(true));
+      }),
       "SELECT TRUE",
       [],
     ],
     [
-      sql.select().conditional(true, (builder) => builder.where(sql.value(true))),
+      sql.select().conditional(true, (builder) => {
+        builder.where(sql.value(true));
+      }),
       "SELECT TRUE WHERE $1",
       [1],
     ],
