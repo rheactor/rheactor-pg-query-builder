@@ -29,6 +29,9 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "@rheactor/rheactor-core": "github:@rheactor/rheactor-core"
+  },
   "devDependencies": {
     "@rheactor/rheactor-oxc-config": "github:rheactor/rheactor-oxc-config",
     "@rheactor/rheactor-pg-connector": "github:rheactor/rheactor-pg-connector",

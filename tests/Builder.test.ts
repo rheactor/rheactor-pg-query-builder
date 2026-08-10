@@ -28,7 +28,7 @@ describe("class Builder", () => {
     [sql.select("test", undefined), 'SELECT "test"', []],
     [sql.select("test"), 'SELECT "test"', []],
     [sql.select('"test"'), 'SELECT "test"', []],
-    [sql.select(String.raw`"test\"`), 'SELECT "test"', []],
+    [sql.select(`"test\\"`), 'SELECT "test"', []],
     [sql.select("test", "test"), 'SELECT "test", "test"', []],
     [sql.select("test1", "test2"), 'SELECT "test1", "test2"', []],
     [sql.select(sql.value(123)), "SELECT $1", [123]],
@@ -191,13 +191,13 @@ describe("class Builder", () => {
     [sql.select().where(sql.jsonValue({ abc: 123 })), "SELECT TRUE WHERE $1", ['{"abc":123}']],
     [sql.select().where(sql.jsonValue(null)), "SELECT TRUE WHERE $1", ["null"]],
     [sql.select().where(sql.jsonValue(null, true)), "SELECT TRUE WHERE $1", [null]],
-    [sql.select().where(sql.jsonStaticValue(null)), 'SELECT TRUE WHERE "null"', []],
+    [sql.select().where(sql.jsonStaticValue(null)), "SELECT TRUE WHERE 'null'", []],
     [sql.select().where(sql.jsonStaticValue(null, true)), "SELECT TRUE WHERE NULL", []],
-    [sql.select().where(sql.jsonStaticValue(123.456)), 'SELECT TRUE WHERE "123.456"', []],
-    [sql.select().where(sql.jsonStaticValue(true)), 'SELECT TRUE WHERE "true"', []],
+    [sql.select().where(sql.jsonStaticValue(123.456)), "SELECT TRUE WHERE '123.456'", []],
+    [sql.select().where(sql.jsonStaticValue(true)), "SELECT TRUE WHERE 'true'", []],
     [
       sql.select().where(sql.jsonStaticValue({ abc: 123 })),
-      'SELECT TRUE WHERE "{""abc"":123}"',
+      "SELECT TRUE WHERE '{\"abc\":123}'",
       [],
     ],
     [
@@ -237,13 +237,14 @@ describe("class Builder", () => {
     [sql.select().where(sql.exists(sql.select())), "SELECT TRUE WHERE EXISTS (SELECT TRUE)", []],
     [sql.select().where(sql.staticValue(true)), "SELECT TRUE WHERE TRUE", []],
     [sql.select().where(sql.staticValue(false)), "SELECT TRUE WHERE FALSE", []],
-    [sql.select().where(sql.staticValue("")), 'SELECT TRUE WHERE ""', []],
-    [sql.select().where(sql.staticValue("123")), 'SELECT TRUE WHERE "123"', []],
+    [sql.select().where(sql.staticValue("")), "SELECT TRUE WHERE ''", []],
+    [sql.select().where(sql.staticValue("123")), "SELECT TRUE WHERE '123'", []],
     [sql.select().where(sql.staticValue(123)), "SELECT TRUE WHERE 123", []],
-    [sql.select().where(sql.staticValue('"')), 'SELECT TRUE WHERE """"', []],
+    [sql.select().where(sql.staticValue('"')), "SELECT TRUE WHERE '\"'", []],
+    [sql.select().where(sql.staticValue("'")), "SELECT TRUE WHERE ''''", []],
     [
       sql.select().where(sql.staticValue(JSON.stringify({ hello: "world" }))),
-      'SELECT TRUE WHERE "{""hello"":""world""}"',
+      'SELECT TRUE WHERE \'{"hello":"world"}\'',
       [],
     ],
     [sql.select().where(sql.staticValue(123.456)), "SELECT TRUE WHERE 123.456", []],
@@ -285,7 +286,7 @@ describe("class Builder", () => {
       'SELECT TRUE ORDER BY "id" COLLATE POSIX',
       [],
     ],
-    [sql.select().orderBy(sql.staticValue("test")), 'SELECT TRUE ORDER BY "test"', []],
+    [sql.select().orderBy(sql.staticValue("test")), "SELECT TRUE ORDER BY 'test'", []],
     [
       sql.select().orderBy(sql.call("COALESCE", "id", "index")),
       'SELECT TRUE ORDER BY COALESCE("id", "index")',
@@ -379,7 +380,7 @@ describe("class Builder", () => {
         .when("index", sql.value(123))
         .when(sql.value(456), sql.staticValue(null))
         .else(sql.staticValue("else")),
-      'CASE "test" WHEN "index" THEN $1 WHEN $2 THEN NULL ELSE "else" END',
+      'CASE "test" WHEN "index" THEN $1 WHEN $2 THEN NULL ELSE \'else\' END',
       [123, 456],
     ],
     [
@@ -816,10 +817,14 @@ describe("class Builder", () => {
     // JSON operators
     [sql.select(sql.jsonGet("data", sql.value("name"))), 'SELECT "data" -> $1', ["name"]],
     [sql.select(sql.jsonGetText("data", sql.value("name"))), 'SELECT "data" ->> $1', ["name"]],
-    [sql.select(sql.jsonGetPath("data", sql.staticValue("{a,b}"))), 'SELECT "data" #> "{a,b}"', []],
+    [
+      sql.select(sql.jsonGetPath("data", sql.staticValue("{a,b}"))),
+      "SELECT \"data\" #> '{a,b}'",
+      [],
+    ],
     [
       sql.select(sql.jsonGetPathText("data", sql.staticValue("{a,b}"))),
-      'SELECT "data" #>> "{a,b}"',
+      "SELECT \"data\" #>> '{a,b}'",
       [],
     ],
     [

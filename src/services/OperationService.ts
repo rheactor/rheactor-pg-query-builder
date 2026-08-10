@@ -1,3 +1,5 @@
+import { escapeIdentifier, escapeLiteral } from "@rheactor/rheactor-core";
+
 // oxlint-disable-next-line import/no-cycle
 import { Builder } from "#/Builder";
 import { isFalseable } from "#/services/FalseableService";
@@ -40,7 +42,7 @@ export function operation(expression: Expression): Operation[] {
 
     const identifier = expression.replaceAll(/["\\`]/gv, "");
 
-    return [`"${identifier}"`];
+    return [escapeIdentifier(identifier)];
   }
 
   if (expression instanceof Builder) {
@@ -206,7 +208,7 @@ export function operation(expression: Expression): Operation[] {
             ? ["FALSE"]
             : typeof expression.argument === "number" || typeof expression.argument === "bigint"
               ? [expression.argument.toString()]
-              : [`"${expression.argument.replaceAll('"', '""')}"`];
+              : [escapeLiteral(expression.argument)];
     }
 
     case "CALL": {
