@@ -17,6 +17,63 @@ describe("class BuilderAggregate", () => {
     [sql.aggregate("STRING_AGG", "name", sql.value(", ")), 'STRING_AGG("name", $1)', [", "]],
     [sql.aggregate("ARRAY_AGG", sql.value(123)), "ARRAY_AGG($1)", [123]],
     [sql.aggregate("ARRAY_AGG"), "ARRAY_AGG()", []],
+    [sql.aggregate("COUNT", "id").distinct(), 'COUNT(DISTINCT "id")', []],
+    [sql.aggregate("COUNT", "*").distinct(), "COUNT(DISTINCT *)", []],
+    [sql.aggregate("COUNT", "id").distinct().distinct(false), 'COUNT("id")', []],
+    [sql.aggregate("ARRAY_AGG", "id").distinct(false), 'ARRAY_AGG("id")', []],
+    [
+      sql.aggregate("ARRAY_AGG", "id").distinct().orderBy("id"),
+      'ARRAY_AGG(DISTINCT "id" ORDER BY "id")',
+      [],
+    ],
+    [
+      sql.aggregate("ARRAY_AGG", "id").distinct().orderBy("id", "DESC", "NULLS LAST"),
+      'ARRAY_AGG(DISTINCT "id" ORDER BY "id" DESC NULLS LAST)',
+      [],
+    ],
+    [
+      sql.aggregate("STRING_AGG", "name", sql.value(", ")).distinct().orderBy("name", "ASC"),
+      'STRING_AGG(DISTINCT "name", $1 ORDER BY "name" ASC)',
+      [", "],
+    ],
+    [
+      sql.aggregate("JSON_AGG", "data").distinct().orderBy("created_at"),
+      'JSON_AGG(DISTINCT "data" ORDER BY "created_at")',
+      [],
+    ],
+    [
+      sql
+        .aggregate("COUNT", "id")
+        .distinct()
+        .conditional(true, (builder) => {
+          builder.distinct();
+        }),
+      'COUNT(DISTINCT "id")',
+      [],
+    ],
+    [
+      sql
+        .aggregate("COUNT", "id")
+        .distinct()
+        .conditional(false, (builder) => {
+          builder.distinct(false);
+        }),
+      'COUNT(DISTINCT "id")',
+      [],
+    ],
+    [
+      sql.select(sql.aggregate("COUNT", "id").distinct()).from("users"),
+      'SELECT COUNT(DISTINCT "id") FROM "users"',
+      [],
+    ],
+    [
+      sql
+        .select(sql.aggregate("ARRAY_AGG", "id").distinct().orderBy("id"))
+        .from("users")
+        .groupBy("country"),
+      'SELECT ARRAY_AGG(DISTINCT "id" ORDER BY "id") FROM "users" GROUP BY "country"',
+      [],
+    ],
     [sql.aggregate("CUSTOM_AGG", "id").orderBy("id"), 'CUSTOM_AGG("id" ORDER BY "id")', []],
     [sql.aggregate("ARRAY_AGG", "id").orderBy("id"), 'ARRAY_AGG("id" ORDER BY "id")', []],
     [

@@ -12,6 +12,8 @@ interface Order {
 }
 
 export class BuilderAggregate extends Builder {
+  private selectDistinct = false;
+
   private readonly expressions: Expression[];
 
   private readonly orders: Order[] = [];
@@ -25,6 +27,12 @@ export class BuilderAggregate extends Builder {
     this.expressions = expressions;
   }
 
+  public distinct(mode = true) {
+    this.selectDistinct = mode;
+
+    return this;
+  }
+
   public orderBy(expression: Expression, direction?: OrderDirection, nulls?: OrderNulls) {
     this.orders.push({ expression, direction, nulls });
 
@@ -35,6 +43,7 @@ export class BuilderAggregate extends Builder {
     const operations: Operation[] = [
       this.identifier,
       "(",
+      ...(this.selectDistinct ? ["DISTINCT "] : []),
       ...joinOperations(
         this.expressions.map((argument) => operation(argument)),
         ", ",

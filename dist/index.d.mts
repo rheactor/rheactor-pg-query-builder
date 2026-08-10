@@ -182,9 +182,11 @@ type OrderNulls = "NULLS FIRST" | "NULLS LAST";
 //#region src/BuilderAggregate.d.ts
 declare class BuilderAggregate extends Builder {
   private readonly identifier;
+  private selectDistinct;
   private readonly expressions;
   private readonly orders;
   constructor(identifier: AggregateFunction, ...expressions: Expression[]);
+  distinct(mode?: boolean): this;
   orderBy(expression: Expression, direction?: OrderDirection, nulls?: OrderNulls): this;
   getOperations(): Operation[];
 }
