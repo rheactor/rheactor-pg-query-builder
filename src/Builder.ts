@@ -58,43 +58,43 @@ export abstract class Builder {
     };
   }
 
-  public join(table: Identifier, alias: Identifier, ...conditions: Expression[]) {
+  public join(table: Identifier, alias?: Identifier, ...conditions: Expression[]) {
     this.joins.push({ type: "INNER", table, alias, conditions });
 
     return this;
   }
 
-  public joinLeft(table: Identifier, alias: Identifier, ...conditions: Expression[]) {
+  public joinLeft(table: Identifier, alias?: Identifier, ...conditions: Expression[]) {
     this.joins.push({ type: "LEFT", table, alias, conditions });
 
     return this;
   }
 
-  public joinLateral(query: Builder, alias: Identifier, ...conditions: Expression[]) {
+  public joinLateral(query: Builder, alias?: Identifier, ...conditions: Expression[]) {
     this.joins.push({ type: "INNER", table: query, alias, conditions, lateral: true });
 
     return this;
   }
 
-  public joinLeftLateral(query: Builder, alias: Identifier, ...conditions: Expression[]) {
+  public joinLeftLateral(query: Builder, alias?: Identifier, ...conditions: Expression[]) {
     this.joins.push({ type: "LEFT", table: query, alias, conditions, lateral: true });
 
     return this;
   }
 
-  public joinRight(table: Identifier, alias: Identifier, ...conditions: Expression[]) {
+  public joinRight(table: Identifier, alias?: Identifier, ...conditions: Expression[]) {
     this.joins.push({ type: "RIGHT", table, alias, conditions });
 
     return this;
   }
 
-  public joinFullOuter(table: Identifier, alias: Identifier, ...conditions: Expression[]) {
+  public joinFullOuter(table: Identifier, alias?: Identifier, ...conditions: Expression[]) {
     this.joins.push({ type: "FULL OUTER", table, alias, conditions });
 
     return this;
   }
 
-  public joinCross(table: Identifier, alias: Identifier) {
+  public joinCross(table: Identifier, alias?: Identifier) {
     this.joins.push({ type: "CROSS", table, alias, conditions: [] });
 
     return this;
@@ -212,7 +212,13 @@ export abstract class Builder {
       operations.push(join.lateral === true ? `${join.type} JOIN LATERAL ` : `${join.type} JOIN `);
 
       if (join.table instanceof Builder) {
-        operations.push("(", ...operation(join.table), ") AS ", ...operation(join.alias), " ");
+        operations.push("(", ...operation(join.table), ")");
+
+        if (join.alias !== undefined) {
+          operations.push(" AS ", ...operation(join.alias));
+        }
+
+        operations.push(" ");
       } else {
         operations.push(
           ...operation({

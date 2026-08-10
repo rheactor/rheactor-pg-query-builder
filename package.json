@@ -18,7 +18,7 @@
     }
   },
   "scripts": {
-    "build": "bun run lint && tsdown",
+    "build": "bun run lint && bun run test && tsdown",
     "lint": "bun run typecheck && bun run oxlint && bun run oxfmt",
     "lint:fix": "bun run typecheck && bun run oxlint:fix && bun run oxfmt:fix",
     "oxfmt": "oxfmt --check ./src ./tests ./*.json",

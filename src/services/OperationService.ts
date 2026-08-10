@@ -94,9 +94,15 @@ export function operation(expression: Expression): Operation[] {
     }
 
     case "IDENTIFIER": {
-      return expression.alias === undefined
+      const alias =
+        typeof expression.identifier === "string" &&
+        (expression.alias === undefined || expression.alias === expression.identifier)
+          ? undefined
+          : expression.alias;
+
+      return alias === undefined
         ? operation(expression.identifier)
-        : [...operation(expression.identifier), " AS ", ...operation(expression.alias)];
+        : [...operation(expression.identifier), " AS ", ...operation(alias)];
     }
 
     case "EXCLUDED": {

@@ -33,6 +33,8 @@ describe("class Builder", () => {
     [sql.select("test1", "test2"), 'SELECT "test1", "test2"', []],
     [sql.select(sql.value(123)), "SELECT $1", [123]],
     [sql.select().selectAliased("test1", "test2"), 'SELECT "test1" AS "test2"', []],
+    [sql.select().selectAliased("test1", "test1"), 'SELECT "test1"', []],
+    [sql.select().selectAliased(sql.value(1), "test1"), 'SELECT $1 AS "test1"', [1]],
     [
       sql
         .select("test0")
@@ -50,6 +52,7 @@ describe("class Builder", () => {
       'SELECT TRUE FROM "test1" AS "test2", $1 AS "test2"',
       [123],
     ],
+    [sql.select().fromAliased("users", "users"), 'SELECT TRUE FROM "users"', []],
     [
       sql
         .select()
@@ -70,6 +73,11 @@ describe("class Builder", () => {
     [
       sql.select().fromSampledAliased("users", "u", "BERNOULLI", 25),
       'SELECT TRUE FROM "users" AS "u" TABLESAMPLE BERNOULLI(25)',
+      [],
+    ],
+    [
+      sql.select().fromSampledAliased("users", "users", "BERNOULLI", 25),
+      'SELECT TRUE FROM "users" TABLESAMPLE BERNOULLI(25)',
       [],
     ],
     [
@@ -609,6 +617,60 @@ describe("class Builder", () => {
     [
       sql.select("u.name", "s.name").fromAliased("users", "u").joinCross("settings", "s"),
       'SELECT "u"."name", "s"."name" FROM "users" AS "u" CROSS JOIN "settings" AS "s"',
+      [],
+    ],
+    [
+      sql
+        .select("u.name", "p.title")
+        .fromAliased("users", "u")
+        .join("posts", undefined, sql.eq("posts.user_id", "u.id")),
+      'SELECT "u"."name", "p"."title" FROM "users" AS "u" INNER JOIN "posts" ON "posts"."user_id" = "u"."id"',
+      [],
+    ],
+    [
+      sql
+        .select("users.name", "posts.title")
+        .from("users")
+        .join("posts", "posts", sql.eq("posts.user_id", "users.id")),
+      'SELECT "users"."name", "posts"."title" FROM "users" INNER JOIN "posts" ON "posts"."user_id" = "users"."id"',
+      [],
+    ],
+    [
+      sql.select("u.name", "p.title").fromAliased("users", "u").joinLeft("posts"),
+      'SELECT "u"."name", "p"."title" FROM "users" AS "u" LEFT JOIN "posts"',
+      [],
+    ],
+    [
+      sql
+        .select("u.name", "o.total")
+        .fromAliased("users", "u")
+        .joinRight("orders", "orders", sql.eq("orders.user_id", "u.id")),
+      'SELECT "u"."name", "o"."total" FROM "users" AS "u" RIGHT JOIN "orders" ON "orders"."user_id" = "u"."id"',
+      [],
+    ],
+    [
+      sql
+        .select("u.name", "o.total")
+        .fromAliased("users", "u")
+        .joinFullOuter("orders", "orders", sql.eq("orders.user_id", "u.id")),
+      'SELECT "u"."name", "o"."total" FROM "users" AS "u" FULL OUTER JOIN "orders" ON "orders"."user_id" = "u"."id"',
+      [],
+    ],
+    [
+      sql.select("users.name", "settings.name").from("users").joinCross("settings"),
+      'SELECT "users"."name", "settings"."name" FROM "users" CROSS JOIN "settings"',
+      [],
+    ],
+    [
+      sql
+        .select("u.name", "o.total")
+        .fromAliased("users", "u")
+        .joinLateral(
+          sql.select("o.total").fromAliased("orders", "o").where(sql.eq("o.user_id", "u.id")),
+          undefined,
+          sql.raw("true"),
+        ),
+      'SELECT "u"."name", "o"."total" FROM "users" AS "u" INNER JOIN LATERAL (SELECT "o"."total" FROM "orders" AS "o" WHERE "o"."user_id" = "u"."id") ON true',
       [],
     ],
     [
