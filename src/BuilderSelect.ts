@@ -4,14 +4,8 @@ import type { Expression } from "#/types/Expression";
 import type { Falseable } from "#/types/Falseable";
 import type { Identifier } from "#/types/Identifier";
 import type { Operation } from "#/types/Operation";
-import type { OrderDirection, OrderNulls } from "#/types/Order";
+import type { Order, OrderDirection, OrderNulls } from "#/types/Order";
 import type { SampleMethod } from "#/types/SampleMethod";
-
-interface Order {
-  expression: Expression;
-  direction?: OrderDirection;
-  nulls?: OrderNulls;
-}
 
 export class BuilderSelect extends Builder {
   private selectDistinct = false;

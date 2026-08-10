@@ -4,13 +4,7 @@ import type { AggregateFunction } from "#/types/AggregateFunction";
 import type { Expression } from "#/types/Expression";
 import type { Falseable } from "#/types/Falseable";
 import type { Operation } from "#/types/Operation";
-import type { OrderDirection, OrderNulls } from "#/types/Order";
-
-interface Order {
-  expression: Expression;
-  direction?: OrderDirection;
-  nulls?: OrderNulls;
-}
+import type { Order, OrderDirection, OrderNulls } from "#/types/Order";
 
 export class BuilderAggregate extends Builder {
   private selectDistinct = false;

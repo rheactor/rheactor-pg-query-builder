@@ -173,7 +173,7 @@ declare abstract class Builder {
 }
 //#endregion
 //#region src/types/AggregateFunction.d.ts
-type AggregateFunction = "ARRAY_AGG" | "JSON_AGG" | "JSONB_AGG" | "JSON_OBJECT_AGG" | "JSONB_OBJECT_AGG" | "STRING_AGG" | "XMLAGG" | (string & {});
+type AggregateFunction = "ANY_VALUE" | "ARRAY_AGG" | "AVG" | "BIT_AND" | "BIT_OR" | "BIT_XOR" | "BOOL_AND" | "BOOL_OR" | "COUNT" | "EVERY" | "JSON_AGG_STRICT" | "JSON_AGG" | "JSON_OBJECT_AGG_STRICT" | "JSON_OBJECT_AGG_UNIQUE_STRICT" | "JSON_OBJECT_AGG_UNIQUE" | "JSON_OBJECT_AGG" | "JSONB_AGG_STRICT" | "JSONB_AGG" | "JSONB_OBJECT_AGG_STRICT" | "JSONB_OBJECT_AGG_UNIQUE_STRICT" | "JSONB_OBJECT_AGG_UNIQUE" | "JSONB_OBJECT_AGG" | "MAX" | "MIN" | "RANGE_AGG" | "RANGE_INTERSECT_AGG" | "STRING_AGG" | "SUM" | "XMLAGG" | "CORR" | "COVAR_POP" | "COVAR_SAMP" | "REGR_AVGX" | "REGR_AVGY" | "REGR_COUNT" | "REGR_INTERCEPT" | "REGR_R2" | "REGR_SLOPE" | "REGR_SXX" | "REGR_SXY" | "REGR_SYY" | "STDDEV_POP" | "STDDEV_SAMP" | "STDDEV" | "VAR_POP" | "VAR_SAMP" | "VARIANCE" | (string & {});
 //#endregion
 //#region src/types/Order.d.ts
 type OrderDirection = "ASC" | "DESC";
