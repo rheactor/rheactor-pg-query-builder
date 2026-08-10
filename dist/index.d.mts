@@ -185,9 +185,11 @@ declare class BuilderAggregate extends Builder {
   private selectDistinct;
   private readonly expressions;
   private readonly orders;
+  private readonly filterWhereExpressions;
   constructor(identifier: AggregateFunction, ...expressions: Expression[]);
   distinct(mode?: boolean): this;
   orderBy(expression: Expression, direction?: OrderDirection, nulls?: OrderNulls): this;
+  filterWhere(...expressions: Array<Falseable<Expression>>): this;
   getOperations(): Operation[];
 }
 //#endregion

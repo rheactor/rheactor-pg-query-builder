@@ -163,6 +163,96 @@ describe("class BuilderAggregate", () => {
       'SELECT STRING_AGG("name", $1 ORDER BY "created_at" DESC) FROM "users" GROUP BY "country"',
       [", "],
     ],
+    [
+      sql.aggregate("SUM", "amount").filterWhere(sql.gt("amount", sql.value(0))),
+      'SUM("amount") FILTER (WHERE "amount" > $1)',
+      [0],
+    ],
+    [
+      sql.aggregate("COUNT", "id").filterWhere(sql.eq("status", sql.value("active"))),
+      'COUNT("id") FILTER (WHERE "status" = $1)',
+      ["active"],
+    ],
+    [
+      sql
+        .aggregate("SUM", "amount")
+        .filterWhere(sql.gt("amount", sql.value(0)), sql.lt("amount", sql.value(100))),
+      'SUM("amount") FILTER (WHERE "amount" > $1 AND "amount" < $2)',
+      [0, 100],
+    ],
+    [
+      sql
+        .aggregate("SUM", "amount")
+        .filterWhere(sql.gt("amount", sql.value(0)))
+        .filterWhere(sql.lt("amount", sql.value(100))),
+      'SUM("amount") FILTER (WHERE "amount" > $1 AND "amount" < $2)',
+      [0, 100],
+    ],
+    [
+      sql
+        .aggregate("ARRAY_AGG", "id")
+        .orderBy("id")
+        .filterWhere(sql.eq("active", sql.value(true))),
+      'ARRAY_AGG("id" ORDER BY "id") FILTER (WHERE "active" = $1)',
+      [1],
+    ],
+    [
+      sql
+        .aggregate("ARRAY_AGG", "id")
+        .distinct()
+        .filterWhere(sql.gt("id", sql.value(0))),
+      'ARRAY_AGG(DISTINCT "id") FILTER (WHERE "id" > $1)',
+      [0],
+    ],
+    [
+      sql
+        .aggregate("COUNT", "*")
+        .filterWhere(sql.and(sql.gt("a", sql.value(0)), sql.gt("b", sql.value(1)))),
+      'COUNT(*) FILTER (WHERE ("a" > $1 AND "b" > $2))',
+      [0, 1],
+    ],
+    [sql.aggregate("SUM", "amount").filterWhere(false), 'SUM("amount")', []],
+    [sql.aggregate("SUM", "amount").filterWhere(null), 'SUM("amount")', []],
+    [sql.aggregate("SUM", "amount").filterWhere(undefined), 'SUM("amount")', []],
+    [
+      sql.aggregate("SUM", "amount").filterWhere(false, sql.gt("amount", sql.value(0))),
+      'SUM("amount") FILTER (WHERE "amount" > $1)',
+      [0],
+    ],
+    [
+      sql.aggregate("SUM", "amount").conditional(true, (builder) => {
+        builder.filterWhere(sql.gt("amount", sql.value(0)));
+      }),
+      'SUM("amount") FILTER (WHERE "amount" > $1)',
+      [0],
+    ],
+    [
+      sql.aggregate("SUM", "amount").conditional(false, (builder) => {
+        builder.filterWhere(sql.gt("amount", sql.value(0)));
+      }),
+      'SUM("amount")',
+      [],
+    ],
+    [
+      sql
+        .select(sql.aggregate("COUNT", "*").filterWhere(sql.gt("price", sql.value(10))))
+        .from("products"),
+      'SELECT COUNT(*) FILTER (WHERE "price" > $1) FROM "products"',
+      [10],
+    ],
+    [
+      sql
+        .select(
+          sql
+            .aggregate("STRING_AGG", "name", sql.value(", "))
+            .orderBy("created_at", "DESC")
+            .filterWhere(sql.eq("country", sql.value("BR"))),
+        )
+        .from("users")
+        .groupBy("country"),
+      'SELECT STRING_AGG("name", $1 ORDER BY "created_at" DESC) FILTER (WHERE "country" = $2) FROM "users" GROUP BY "country"',
+      [", ", "BR"],
+    ],
   ];
 
   it.each(tests)("[#%#]%c %s (%j)", (builder, expectedQuery, expectedParameters) => {

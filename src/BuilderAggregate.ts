@@ -2,6 +2,7 @@ import { Builder } from "#/Builder";
 import { joinOperations, operation } from "#/services/OperationService";
 import type { AggregateFunction } from "#/types/AggregateFunction";
 import type { Expression } from "#/types/Expression";
+import type { Falseable } from "#/types/Falseable";
 import type { Operation } from "#/types/Operation";
 import type { OrderDirection, OrderNulls } from "#/types/Order";
 
@@ -17,6 +18,8 @@ export class BuilderAggregate extends Builder {
   private readonly expressions: Expression[];
 
   private readonly orders: Order[] = [];
+
+  private readonly filterWhereExpressions: Expression[] = [];
 
   public constructor(
     private readonly identifier: AggregateFunction,
@@ -37,6 +40,10 @@ export class BuilderAggregate extends Builder {
     this.orders.push({ expression, direction, nulls });
 
     return this;
+  }
+
+  public filterWhere(...expressions: Array<Falseable<Expression>>) {
+    return this.internalExpressions(this.filterWhereExpressions, ...expressions);
   }
 
   public override getOperations() {
@@ -67,6 +74,18 @@ export class BuilderAggregate extends Builder {
     }
 
     operations.push(")");
+
+    if (this.filterWhereExpressions.length > 0) {
+      operations.push(
+        " FILTER (WHERE ",
+        ...operation({
+          type: "AND",
+          expressions: this.filterWhereExpressions,
+          includeParens: false,
+        }),
+        ")",
+      );
+    }
 
     return operations;
   }
