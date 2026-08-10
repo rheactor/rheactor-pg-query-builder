@@ -4,10 +4,8 @@ import type { Expression } from "#/types/Expression";
 import type { Falseable } from "#/types/Falseable";
 import type { Identifier } from "#/types/Identifier";
 import type { Operation } from "#/types/Operation";
+import type { OrderDirection, OrderNulls } from "#/types/Order";
 import type { SampleMethod } from "#/types/SampleMethod";
-
-type OrderDirection = "ASC" | "DESC";
-type OrderNulls = "NULLS FIRST" | "NULLS LAST";
 
 interface Order {
   expression: Expression;

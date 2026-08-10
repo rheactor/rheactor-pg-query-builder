@@ -1,4 +1,5 @@
 import type { Builder } from "#/Builder";
+import { BuilderAggregate } from "#/BuilderAggregate";
 import { BuilderCase } from "#/BuilderCase";
 import { BuilderConflict } from "#/BuilderConflict";
 import { BuilderDelete } from "#/BuilderDelete";
@@ -7,6 +8,7 @@ import { BuilderSelect } from "#/BuilderSelect";
 import { BuilderSetOperation } from "#/BuilderSetOperation";
 import { BuilderUpdate } from "#/BuilderUpdate";
 import { call } from "#/supports/PostgresFunctions";
+import type { AggregateFunction } from "#/types/AggregateFunction";
 import type { Cast } from "#/types/Cast";
 import type { Collate } from "#/types/Collate";
 import type {
@@ -22,12 +24,16 @@ import type { Value } from "#/types/Value";
 import type { ValueExtended } from "#/types/ValueExtended";
 
 const functions = {
-  and(...expressions: Array<Falseable<Expression>>): Expression {
-    return { type: "AND", expressions };
+  aggregate(identifier: AggregateFunction, ...expressions: Expression[]) {
+    return new BuilderAggregate(identifier, ...expressions);
   },
 
   all(sideA: Expression, operator: ComparisonOperator, sideB: Expression): Expression {
     return { type: "ALL", operator, sideA, sideB };
+  },
+
+  and(...expressions: Array<Falseable<Expression>>): Expression {
+    return { type: "AND", expressions };
   },
 
   any(sideA: Expression, operator: ComparisonOperator, sideB: Expression): Expression {

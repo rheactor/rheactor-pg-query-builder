@@ -172,6 +172,23 @@ declare abstract class Builder {
   abstract getOperations(): Operation[];
 }
 //#endregion
+//#region src/types/AggregateFunction.d.ts
+type AggregateFunction = "ARRAY_AGG" | "JSON_AGG" | "JSONB_AGG" | "JSON_OBJECT_AGG" | "JSONB_OBJECT_AGG" | "STRING_AGG" | "XMLAGG" | (string & {});
+//#endregion
+//#region src/types/Order.d.ts
+type OrderDirection = "ASC" | "DESC";
+type OrderNulls = "NULLS FIRST" | "NULLS LAST";
+//#endregion
+//#region src/BuilderAggregate.d.ts
+declare class BuilderAggregate extends Builder {
+  private readonly identifier;
+  private readonly expressions;
+  private readonly orders;
+  constructor(identifier: AggregateFunction, ...expressions: Expression[]);
+  orderBy(expression: Expression, direction?: OrderDirection, nulls?: OrderNulls): this;
+  getOperations(): Operation[];
+}
+//#endregion
 //#region src/BuilderCase.d.ts
 declare class BuilderCase extends Builder {
   private readonly expression?;
@@ -218,8 +235,6 @@ declare class BuilderInsert extends Builder {
 }
 //#endregion
 //#region src/BuilderSelect.d.ts
-type OrderDirection = "ASC" | "DESC";
-type OrderNulls = "NULLS FIRST" | "NULLS LAST";
 declare class BuilderSelect extends Builder {
   private selectDistinct;
   private readonly orders;
@@ -434,8 +449,9 @@ declare function call(identifier: "VERSION"): Expression;
 //#endregion
 //#region src/index.d.ts
 declare const functions: {
-  and(...expressions: Array<Falseable<Expression>>): Expression;
+  aggregate(identifier: AggregateFunction, ...expressions: Expression[]): BuilderAggregate;
   all(sideA: Expression, operator: ComparisonOperator, sideB: Expression): Expression;
+  and(...expressions: Array<Falseable<Expression>>): Expression;
   any(sideA: Expression, operator: ComparisonOperator, sideB: Expression): Expression;
   arrayOverlap(sideA: Expression, sideB: Expression): Expression;
   between(identifier: Identifier, from: Expression, to: Expression): Expression;
