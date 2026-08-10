@@ -91,6 +91,11 @@ describe("Comparison Functions and Operators (9.2)", () => {
       ],
       [sql.select().where(sql.isNull("test")), 'SELECT TRUE WHERE "test" IS NULL', []],
       [sql.select().where(sql.isNotNull("test")), 'SELECT TRUE WHERE NOT "test" IS NULL', []],
+      [
+        sql.select().where(sql.isNull(sql.staticValue("test"))),
+        "SELECT TRUE WHERE 'test' IS NULL",
+        [],
+      ],
       [sql.select().where(sql.isTrue(sql.staticValue(true))), "SELECT TRUE WHERE TRUE IS TRUE", []],
       [
         sql.select().where(sql.isFalse(sql.staticValue(true))),

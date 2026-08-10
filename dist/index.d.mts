@@ -90,7 +90,7 @@ type Expression = Builder | Identifier | {
   expression: Expression;
 } | {
   type: "IS NULL";
-  identifier: Identifier;
+  expression: Expression;
 } | {
   type: "JSON";
   argument: JsonValue;
@@ -519,7 +519,8 @@ declare const functions: {
   exists(builder: Builder): Expression;
   gt(sideA: Expression, sideB: Expression): Expression;
   gte(sideA: Expression, sideB: Expression): Expression;
-  isNull(identifier: Identifier): Expression;
+  isNull(expression: Expression): Expression;
+  isNotNull(expression: Expression): Expression;
   isTrue(expression: Expression): Expression;
   isFalse(expression: Expression): Expression;
   isUnknown(expression: Expression): Expression;
@@ -527,7 +528,6 @@ declare const functions: {
   in(identifier: Identifier, ...values: Expression[]): Expression;
   ilike(identifier: Identifier, pattern: Expression): Expression;
   insert(table: Identifier, columns: Identifier[]): BuilderInsert;
-  isNotNull(identifier: Identifier): Expression;
   jsonValue(argument: JsonValue, nullAsSQL?: boolean): Expression;
   jsonStaticValue(argument: JsonValue, nullAsSQL?: boolean): Expression;
   jsonExists(sideA: Expression, sideB: Expression): Expression;

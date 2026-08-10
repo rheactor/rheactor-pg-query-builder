@@ -152,7 +152,7 @@ export function operation(expression: Expression): Operation[] {
     }
 
     case "IS NULL": {
-      return [...operation(expression.identifier), " IS NULL"];
+      return [...operation(expression.expression), " IS NULL"];
     }
 
     case "LIKE":

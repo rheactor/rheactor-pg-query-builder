@@ -108,8 +108,12 @@ const functions = {
     return { type: ">=", sideA, sideB };
   },
 
-  isNull(identifier: Identifier): Expression {
-    return { type: "IS NULL", identifier };
+  isNull(expression: Expression): Expression {
+    return { type: "IS NULL", expression };
+  },
+
+  isNotNull(expression: Expression): Expression {
+    return functions.not({ type: "IS NULL", expression });
   },
 
   isTrue(expression: Expression): Expression {
@@ -138,10 +142,6 @@ const functions = {
 
   insert(table: Identifier, columns: Identifier[]) {
     return new BuilderInsert(table, columns);
-  },
-
-  isNotNull(identifier: Identifier): Expression {
-    return functions.not({ type: "IS NULL", identifier });
   },
 
   jsonValue(argument: JsonValue, nullAsSQL = false): Expression {

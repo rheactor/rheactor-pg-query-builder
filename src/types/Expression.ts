@@ -65,7 +65,7 @@ export type Expression =
   | { type: "IDENTIFIER"; identifier: Expression; alias?: Identifier }
   | { type: "IN"; identifier: Identifier; values: Expression[] }
   | { type: "IS FALSE" | "IS TRUE" | "IS UNKNOWN" | "NOT"; expression: Expression }
-  | { type: "IS NULL"; identifier: Identifier }
+  | { type: "IS NULL"; expression: Expression }
   | { type: "JSON"; argument: JsonValue }
   | { type: "RAW"; expression: string }
   | { type: "STATIC"; argument: ValueExtended }
