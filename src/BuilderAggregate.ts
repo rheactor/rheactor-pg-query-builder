@@ -1,19 +1,15 @@
-import { Builder } from "#/Builder";
+import { BuilderAggregateBase } from "#/BuilderAggregateBase";
 import { joinOperations, operation } from "#/services/OperationService";
 import type { AggregateFunction } from "#/types/AggregateFunction";
 import type { Expression } from "#/types/Expression";
 import type { Falseable } from "#/types/Falseable";
 import type { Operation } from "#/types/Operation";
-import type { Order, OrderDirection, OrderNulls } from "#/types/Order";
+import type { OrderDirection, OrderNulls } from "#/types/Order";
 
-export class BuilderAggregate extends Builder {
+export class BuilderAggregate extends BuilderAggregateBase {
   private selectDistinct = false;
 
   private readonly expressions: Expression[];
-
-  private readonly orders: Order[] = [];
-
-  private readonly filterWhereExpressions: Expression[] = [];
 
   public constructor(
     private readonly identifier: AggregateFunction,
@@ -30,14 +26,12 @@ export class BuilderAggregate extends Builder {
     return this;
   }
 
-  public orderBy(expression: Expression, direction?: OrderDirection, nulls?: OrderNulls) {
-    this.orders.push({ expression, direction, nulls });
-
-    return this;
+  public override orderBy(expression: Expression, direction?: OrderDirection, nulls?: OrderNulls) {
+    return super.orderBy(expression, direction, nulls);
   }
 
-  public filterWhere(...expressions: Array<Falseable<Expression>>) {
-    return this.internalExpressions(this.filterWhereExpressions, ...expressions);
+  public override filterWhere(...expressions: Array<Falseable<Expression>>) {
+    return super.filterWhere(...expressions);
   }
 
   public override getOperations() {
@@ -52,34 +46,11 @@ export class BuilderAggregate extends Builder {
       ),
     ];
 
-    if (this.orders.length > 0) {
-      operations.push(
-        " ORDER BY ",
-        ...joinOperations(
-          this.orders.map((order) => [
-            ...operation(order.expression),
-            ...(order.direction ? [` ${order.direction}`] : []),
-            ...(order.nulls ? [` ${order.nulls}`] : []),
-          ]),
-          ", ",
-          false,
-        ),
-      );
-    }
+    this.generateOrderByOperations(operations);
 
     operations.push(")");
 
-    if (this.filterWhereExpressions.length > 0) {
-      operations.push(
-        " FILTER (WHERE ",
-        ...operation({
-          type: "AND",
-          expressions: this.filterWhereExpressions,
-          includeParens: false,
-        }),
-        ")",
-      );
-    }
+    this.generateFilterWhereOperations(operations);
 
     return operations;
   }

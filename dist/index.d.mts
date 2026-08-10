@@ -172,24 +172,69 @@ declare abstract class Builder {
   abstract getOperations(): Operation[];
 }
 //#endregion
-//#region src/types/AggregateFunction.d.ts
-type AggregateFunction = "ANY_VALUE" | "ARRAY_AGG" | "AVG" | "BIT_AND" | "BIT_OR" | "BIT_XOR" | "BOOL_AND" | "BOOL_OR" | "COUNT" | "EVERY" | "JSON_AGG_STRICT" | "JSON_AGG" | "JSON_OBJECT_AGG_STRICT" | "JSON_OBJECT_AGG_UNIQUE_STRICT" | "JSON_OBJECT_AGG_UNIQUE" | "JSON_OBJECT_AGG" | "JSONB_AGG_STRICT" | "JSONB_AGG" | "JSONB_OBJECT_AGG_STRICT" | "JSONB_OBJECT_AGG_UNIQUE_STRICT" | "JSONB_OBJECT_AGG_UNIQUE" | "JSONB_OBJECT_AGG" | "MAX" | "MIN" | "RANGE_AGG" | "RANGE_INTERSECT_AGG" | "STRING_AGG" | "SUM" | "XMLAGG" | "CORR" | "COVAR_POP" | "COVAR_SAMP" | "REGR_AVGX" | "REGR_AVGY" | "REGR_COUNT" | "REGR_INTERCEPT" | "REGR_R2" | "REGR_SLOPE" | "REGR_SXX" | "REGR_SXY" | "REGR_SYY" | "STDDEV_POP" | "STDDEV_SAMP" | "STDDEV" | "VAR_POP" | "VAR_SAMP" | "VARIANCE" | (string & {});
-//#endregion
 //#region src/types/Order.d.ts
 type OrderDirection = "ASC" | "DESC";
 type OrderNulls = "NULLS FIRST" | "NULLS LAST";
+interface Order {
+  expression: Expression;
+  direction?: OrderDirection;
+  nulls?: OrderNulls;
+}
+//#endregion
+//#region src/BuilderAggregateBase.d.ts
+declare abstract class BuilderAggregateBase extends Builder {
+  protected readonly orders: Order[];
+  protected readonly filterWhereExpressions: Expression[];
+  protected orderBy(expression: Expression, direction?: OrderDirection, nulls?: OrderNulls): this;
+  protected filterWhere(...expressions: Array<Falseable<Expression>>): this;
+  protected generateOrderByOperations(operations: Operation[]): void;
+  protected generateFilterWhereOperations(operations: Operation[]): void;
+  abstract getOperations(): Operation[];
+}
+//#endregion
+//#region src/types/AggregateFunction.d.ts
+type AggregateFunction = "ANY_VALUE" | "ARRAY_AGG" | "AVG" | "BIT_AND" | "BIT_OR" | "BIT_XOR" | "BOOL_AND" | "BOOL_OR" | "COUNT" | "EVERY" | "JSON_AGG_STRICT" | "JSON_AGG" | "JSON_OBJECT_AGG_STRICT" | "JSON_OBJECT_AGG_UNIQUE_STRICT" | "JSON_OBJECT_AGG_UNIQUE" | "JSON_OBJECT_AGG" | "JSONB_AGG_STRICT" | "JSONB_AGG" | "JSONB_OBJECT_AGG_STRICT" | "JSONB_OBJECT_AGG_UNIQUE_STRICT" | "JSONB_OBJECT_AGG_UNIQUE" | "JSONB_OBJECT_AGG" | "MAX" | "MIN" | "RANGE_AGG" | "RANGE_INTERSECT_AGG" | "STRING_AGG" | "SUM" | "XMLAGG" | "CORR" | "COVAR_POP" | "COVAR_SAMP" | "REGR_AVGX" | "REGR_AVGY" | "REGR_COUNT" | "REGR_INTERCEPT" | "REGR_R2" | "REGR_SLOPE" | "REGR_SXX" | "REGR_SXY" | "REGR_SYY" | "STDDEV_POP" | "STDDEV_SAMP" | "STDDEV" | "VAR_POP" | "VAR_SAMP" | "VARIANCE" | (string & {});
 //#endregion
 //#region src/BuilderAggregate.d.ts
-declare class BuilderAggregate extends Builder {
+declare class BuilderAggregate extends BuilderAggregateBase {
   private readonly identifier;
   private selectDistinct;
   private readonly expressions;
-  private readonly orders;
-  private readonly filterWhereExpressions;
   constructor(identifier: AggregateFunction, ...expressions: Expression[]);
   distinct(mode?: boolean): this;
   orderBy(expression: Expression, direction?: OrderDirection, nulls?: OrderNulls): this;
   filterWhere(...expressions: Array<Falseable<Expression>>): this;
+  getOperations(): Operation[];
+}
+//#endregion
+//#region src/types/JsonReturningType.d.ts
+type JsonReturningType = "JSON" | "JSONB" | "BYTEA" | "TEXT" | "CHAR" | "VARCHAR" | (string & {});
+//#endregion
+//#region src/BuilderAggregateArray.d.ts
+declare class BuilderAggregateArray extends BuilderAggregateBase {
+  private readonly expression;
+  private absentNull;
+  private returningType?;
+  constructor(expression: Expression);
+  orderBy(expression: Expression, direction?: OrderDirection, nulls?: OrderNulls): this;
+  filterWhere(...expressions: Array<Falseable<Expression>>): this;
+  absentOnNull(mode?: boolean): this;
+  returning(dataType: JsonReturningType): this;
+  getOperations(): Operation[];
+}
+//#endregion
+//#region src/BuilderAggregateObject.d.ts
+declare class BuilderAggregateObject extends BuilderAggregateBase {
+  private readonly keyExpression;
+  private readonly valueExpression;
+  private absentNull;
+  private uniqueKeysValue?;
+  private returningType?;
+  constructor(keyExpression: Expression, valueExpression: Expression);
+  filterWhere(...expressions: Array<Falseable<Expression>>): this;
+  absentOnNull(mode?: boolean): this;
+  uniqueKeys(unique?: boolean): this;
+  returning(dataType: JsonReturningType): this;
   getOperations(): Operation[];
 }
 //#endregion
@@ -454,6 +499,8 @@ declare function call(identifier: "VERSION"): Expression;
 //#region src/index.d.ts
 declare const functions: {
   aggregate(identifier: AggregateFunction, ...expressions: Expression[]): BuilderAggregate;
+  jsonArrayAggregate(expression: Expression): BuilderAggregateArray;
+  jsonObjectAggregate(key: Expression, value: Expression): BuilderAggregateObject;
   all(sideA: Expression, operator: ComparisonOperator, sideB: Expression): Expression;
   and(...expressions: Array<Falseable<Expression>>): Expression;
   any(sideA: Expression, operator: ComparisonOperator, sideB: Expression): Expression;

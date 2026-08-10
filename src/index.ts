@@ -1,5 +1,7 @@
 import type { Builder } from "#/Builder";
 import { BuilderAggregate } from "#/BuilderAggregate";
+import { BuilderAggregateArray } from "#/BuilderAggregateArray";
+import { BuilderAggregateObject } from "#/BuilderAggregateObject";
 import { BuilderCase } from "#/BuilderCase";
 import { BuilderConflict } from "#/BuilderConflict";
 import { BuilderDelete } from "#/BuilderDelete";
@@ -26,6 +28,14 @@ import type { ValueExtended } from "#/types/ValueExtended";
 const functions = {
   aggregate(identifier: AggregateFunction, ...expressions: Expression[]) {
     return new BuilderAggregate(identifier, ...expressions);
+  },
+
+  jsonArrayAggregate(expression: Expression) {
+    return new BuilderAggregateArray(expression);
+  },
+
+  jsonObjectAggregate(key: Expression, value: Expression) {
+    return new BuilderAggregateObject(key, value);
   },
 
   all(sideA: Expression, operator: ComparisonOperator, sideB: Expression): Expression {
