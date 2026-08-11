@@ -79,7 +79,7 @@ describe("class BuilderAggregate", () => {
     ],
     [
       sql.select(sql.aggregate("COUNT", "id").distinct()).from("users"),
-      'SELECT COUNT(DISTINCT "id") FROM "users"',
+      'SELECT (COUNT(DISTINCT "id")) FROM "users"',
       [],
     ],
     [
@@ -87,7 +87,7 @@ describe("class BuilderAggregate", () => {
         .select(sql.aggregate("ARRAY_AGG", "id").distinct().orderBy("id"))
         .from("users")
         .groupBy("country"),
-      'SELECT ARRAY_AGG(DISTINCT "id" ORDER BY "id") FROM "users" GROUP BY "country"',
+      'SELECT (ARRAY_AGG(DISTINCT "id" ORDER BY "id")) FROM "users" GROUP BY "country"',
       [],
     ],
     [sql.aggregate("CUSTOM_AGG", "id").orderBy("id"), 'CUSTOM_AGG("id" ORDER BY "id")', []],
@@ -168,7 +168,7 @@ describe("class BuilderAggregate", () => {
     ],
     [
       sql.select(sql.aggregate("ARRAY_AGG", "id").orderBy("id")).from("users"),
-      'SELECT ARRAY_AGG("id" ORDER BY "id") FROM "users"',
+      'SELECT (ARRAY_AGG("id" ORDER BY "id")) FROM "users"',
       [],
     ],
     [
@@ -176,7 +176,7 @@ describe("class BuilderAggregate", () => {
         .select(sql.aggregate("STRING_AGG", "name", sql.value(", ")).orderBy("created_at", "DESC"))
         .from("users")
         .groupBy("country"),
-      'SELECT STRING_AGG("name", $1 ORDER BY "created_at" DESC) FROM "users" GROUP BY "country"',
+      'SELECT (STRING_AGG("name", $1 ORDER BY "created_at" DESC)) FROM "users" GROUP BY "country"',
       [", "],
     ],
     [
@@ -253,7 +253,7 @@ describe("class BuilderAggregate", () => {
       sql
         .select(sql.aggregate("COUNT", "*").filterWhere(sql.gt("price", sql.value(10))))
         .from("products"),
-      'SELECT COUNT(*) FILTER (WHERE "price" > $1) FROM "products"',
+      'SELECT (COUNT(*) FILTER (WHERE "price" > $1)) FROM "products"',
       [10],
     ],
     [
@@ -266,7 +266,7 @@ describe("class BuilderAggregate", () => {
         )
         .from("users")
         .groupBy("country"),
-      'SELECT STRING_AGG("name", $1 ORDER BY "created_at" DESC) FILTER (WHERE "country" = $2) FROM "users" GROUP BY "country"',
+      'SELECT (STRING_AGG("name", $1 ORDER BY "created_at" DESC) FILTER (WHERE "country" = $2)) FROM "users" GROUP BY "country"',
       [", ", "BR"],
     ],
   ];

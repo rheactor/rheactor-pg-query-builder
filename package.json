@@ -30,7 +30,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@rheactor/rheactor-core": "github:@rheactor/rheactor-core"
+    "@rheactor/rheactor-core": "github:@rheactor/rheactor-core#main"
   },
   "devDependencies": {
     "@rheactor/rheactor-oxc-config": "github:rheactor/rheactor-oxc-config",

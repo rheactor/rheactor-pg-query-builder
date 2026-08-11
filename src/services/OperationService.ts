@@ -53,7 +53,7 @@ export function operation(expression: Expression): Operation[] {
       operations[operations.length - 1] = operationsLatest.trimEnd();
     }
 
-    return operations;
+    return ["(", ...operations, ")"];
   }
 
   switch (expression.type) {
@@ -83,13 +83,10 @@ export function operation(expression: Expression): Operation[] {
 
     case "ANY":
     case "ALL": {
-      const sideBOperations = operation(expression.sideB);
-      const isSubquery = expression.sideB instanceof Builder;
-
       return [
         ...operation(expression.sideA),
         ` ${expression.operator} ${expression.type} `,
-        ...(isSubquery ? ["(", ...sideBOperations, ")"] : sideBOperations),
+        ...operation(expression.sideB),
       ];
     }
 
@@ -233,7 +230,7 @@ export function operation(expression: Expression): Operation[] {
     }
 
     case "EXISTS": {
-      return ["EXISTS (", ...operation(expression.builder), ")"];
+      return ["EXISTS ", ...operation(expression.builder)];
     }
 
     case "SET": {

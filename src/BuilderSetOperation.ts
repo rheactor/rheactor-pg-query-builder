@@ -19,11 +19,7 @@ export class BuilderSetOperation extends Builder {
         operations.push(` ${this.operation} `);
       }
 
-      if (query instanceof BuilderSetOperation) {
-        operations.push("(", ...expressionOperation(query), ")");
-      } else {
-        operations.push(...expressionOperation(query));
-      }
+      operations.push(...expressionOperation(query));
     }
 
     return operations;

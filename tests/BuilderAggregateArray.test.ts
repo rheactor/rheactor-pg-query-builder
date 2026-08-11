@@ -62,14 +62,14 @@ describe("class BuilderAggregateArray", () => {
     ],
     [
       sql.select(sql.jsonArrayAggregate("v").orderBy("v").returning("JSONB")).from("users"),
-      'SELECT JSON_ARRAYAGG("v" ORDER BY "v" RETURNING JSONB) FROM "users"',
+      'SELECT (JSON_ARRAYAGG("v" ORDER BY "v" RETURNING JSONB)) FROM "users"',
       [],
     ],
     [
       sql
         .select(sql.jsonArrayAggregate(sql.value(1)).orderBy("v").returning("JSONB"))
         .from("users"),
-      'SELECT JSON_ARRAYAGG($1 ORDER BY "v" RETURNING JSONB) FROM "users"',
+      'SELECT (JSON_ARRAYAGG($1 ORDER BY "v" RETURNING JSONB)) FROM "users"',
       [1],
     ],
   ];

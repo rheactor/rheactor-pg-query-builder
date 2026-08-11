@@ -81,7 +81,7 @@ describe("Comparison Functions and Operators (9.2)", () => {
       ],
       [
         sql.select().where(sql.in("id", sql.select("id").from("active"))),
-        'SELECT TRUE WHERE "id" IN (SELECT "id" FROM "active")',
+        'SELECT TRUE WHERE "id" IN ((SELECT "id" FROM "active"))',
         [],
       ],
       [

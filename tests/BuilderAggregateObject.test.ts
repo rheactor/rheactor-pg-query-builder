@@ -80,12 +80,12 @@ describe("class BuilderAggregateObject", () => {
         .select(sql.jsonObjectAggregate("k", "v").absentOnNull().returning("JSONB"))
         .from("users")
         .groupBy("k", "v"),
-      'SELECT JSON_OBJECTAGG("k" VALUE "v" ABSENT ON NULL RETURNING JSONB) FROM "users" GROUP BY "k", "v"',
+      'SELECT (JSON_OBJECTAGG("k" VALUE "v" ABSENT ON NULL RETURNING JSONB)) FROM "users" GROUP BY "k", "v"',
       [],
     ],
     [
       sql.select(sql.jsonObjectAggregate(sql.value("a"), sql.value(1))).from("users"),
-      'SELECT JSON_OBJECTAGG($1 VALUE $2) FROM "users"',
+      'SELECT (JSON_OBJECTAGG($1 VALUE $2)) FROM "users"',
       ["a", 1],
     ],
   ];

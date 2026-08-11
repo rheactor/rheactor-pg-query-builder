@@ -36,6 +36,40 @@ describe("class Builder", () => {
     [sql.select().selectAliased("test1", "test1"), 'SELECT "test1"', []],
     [sql.select().selectAliased(sql.value(1), "test1"), 'SELECT $1 AS "test1"', [1]],
     [
+      sql.select().selectAliased(sql.select(sql.value(1), sql.value(2)), "test1"),
+      'SELECT (SELECT $1, $2) AS "test1"',
+      [1, 2],
+    ],
+    [
+      sql
+        .select()
+        .selectAliased(sql.select(sql.value(1), sql.value(2)), "test1")
+        .selectAliased(sql.select(sql.value(3)), "test2"),
+      'SELECT (SELECT $1, $2) AS "test1", (SELECT $3) AS "test2"',
+      [1, 2, 3],
+    ],
+    [sql.select(sql.select("test")), 'SELECT (SELECT "test")', []],
+    [
+      sql.select(
+        sql
+          .select("test")
+          .from("users")
+          .where(sql.eq("active", sql.value(true))),
+      ),
+      'SELECT (SELECT "test" FROM "users" WHERE "active" = $1)',
+      [1],
+    ],
+    [
+      sql.select(sql.union(sql.select("id").from("users"), sql.select("id").from("admins"))),
+      'SELECT ((SELECT "id" FROM "users") UNION (SELECT "id" FROM "admins"))',
+      [],
+    ],
+    [
+      sql.select("id", sql.select("name").from("users")),
+      'SELECT "id", (SELECT "name" FROM "users")',
+      [],
+    ],
+    [
       sql
         .select("test0")
         .selectAliased("test1", "test2")
@@ -57,7 +91,7 @@ describe("class Builder", () => {
       sql
         .select()
         .fromAliased(sql.insert("t", ["a"]).values(sql.value(1)).returning(sql.value(2)), "x"),
-      'SELECT TRUE FROM INSERT INTO "t" ("a") VALUES ($1) RETURNING $2 AS "x"',
+      'SELECT TRUE FROM (INSERT INTO "t" ("a") VALUES ($1) RETURNING $2) AS "x"',
       [1, 2],
     ],
     [
@@ -362,14 +396,14 @@ describe("class Builder", () => {
           .from("users")
           .where(sql.eq("active", sql.value(false))),
       ),
-      'INSERT INTO "archive" ("id", "name") SELECT "id", "name" FROM "users" WHERE "active" = $1',
+      'INSERT INTO "archive" ("id", "name") (SELECT "id", "name" FROM "users" WHERE "active" = $1)',
       [0],
     ],
     [
       sql
         .insert("stats", ["user_id", "count"])
         .select(sql.select("user_id", sql.call("COUNT", "*")).from("orders").groupBy("user_id")),
-      'INSERT INTO "stats" ("user_id", "count") SELECT "user_id", COUNT(*) FROM "orders" GROUP BY "user_id"',
+      'INSERT INTO "stats" ("user_id", "count") (SELECT "user_id", COUNT(*) FROM "orders" GROUP BY "user_id")',
       [],
     ],
     [
@@ -377,7 +411,7 @@ describe("class Builder", () => {
         .insert("backup", ["id", "name", "email"])
         .select(sql.select("id", "name", "email").from("users"))
         .returning("id"),
-      'INSERT INTO "backup" ("id", "name", "email") SELECT "id", "name", "email" FROM "users" RETURNING "id"',
+      'INSERT INTO "backup" ("id", "name", "email") (SELECT "id", "name", "email" FROM "users") RETURNING "id"',
       [],
     ],
     [sql.case(), "CASE END", []],
@@ -396,7 +430,7 @@ describe("class Builder", () => {
         .select("id")
         .selectAliased(sql.case("test").when("index", sql.value(123)), "test")
         .from("test"),
-      'SELECT "id", CASE "test" WHEN "index" THEN $1 END AS "test" FROM "test"',
+      'SELECT "id", (CASE "test" WHEN "index" THEN $1 END) AS "test" FROM "test"',
       [123],
     ],
     [
@@ -725,7 +759,7 @@ describe("class Builder", () => {
     ],
     [
       sql.union(sql.select("id", "name").from("users"), sql.select("id", "name").from("admins")),
-      'SELECT "id", "name" FROM "users" UNION SELECT "id", "name" FROM "admins"',
+      '(SELECT "id", "name" FROM "users") UNION (SELECT "id", "name" FROM "admins")',
       [],
     ],
     [
@@ -737,12 +771,12 @@ describe("class Builder", () => {
           sql.select("id", "name").from("buyers"),
         ),
       ),
-      'SELECT "id", "name" FROM "users" UNION (SELECT "id", "name" FROM "admins" UNION SELECT "id", "name" FROM "sellers" UNION SELECT "id", "name" FROM "buyers")',
+      '(SELECT "id", "name" FROM "users") UNION ((SELECT "id", "name" FROM "admins") UNION (SELECT "id", "name" FROM "sellers") UNION (SELECT "id", "name" FROM "buyers"))',
       [],
     ],
     [
       sql.unionAll(sql.select("id", "name").from("users"), sql.select("id", "name").from("admins")),
-      'SELECT "id", "name" FROM "users" UNION ALL SELECT "id", "name" FROM "admins"',
+      '(SELECT "id", "name" FROM "users") UNION ALL (SELECT "id", "name" FROM "admins")',
       [],
     ],
     [
@@ -754,7 +788,7 @@ describe("class Builder", () => {
           sql.select("id", "name").from("buyers"),
         ),
       ),
-      'SELECT "id", "name" FROM "users" UNION ALL (SELECT "id", "name" FROM "admins" UNION ALL SELECT "id", "name" FROM "sellers" UNION ALL SELECT "id", "name" FROM "buyers")',
+      '(SELECT "id", "name" FROM "users") UNION ALL ((SELECT "id", "name" FROM "admins") UNION ALL (SELECT "id", "name" FROM "sellers") UNION ALL (SELECT "id", "name" FROM "buyers"))',
       [],
     ],
     [
@@ -762,7 +796,7 @@ describe("class Builder", () => {
         sql.select("id", "name").from("users"),
         sql.select("id", "name").from("admins"),
       ),
-      'SELECT "id", "name" FROM "users" INTERSECT SELECT "id", "name" FROM "admins"',
+      '(SELECT "id", "name" FROM "users") INTERSECT (SELECT "id", "name" FROM "admins")',
       [],
     ],
     [
@@ -774,12 +808,12 @@ describe("class Builder", () => {
           sql.select("id", "name").from("buyers"),
         ),
       ),
-      'SELECT "id", "name" FROM "users" INTERSECT (SELECT "id", "name" FROM "admins" INTERSECT SELECT "id", "name" FROM "sellers" INTERSECT SELECT "id", "name" FROM "buyers")',
+      '(SELECT "id", "name" FROM "users") INTERSECT ((SELECT "id", "name" FROM "admins") INTERSECT (SELECT "id", "name" FROM "sellers") INTERSECT (SELECT "id", "name" FROM "buyers"))',
       [],
     ],
     [
       sql.except(sql.select("id", "name").from("users"), sql.select("id", "name").from("admins")),
-      'SELECT "id", "name" FROM "users" EXCEPT SELECT "id", "name" FROM "admins"',
+      '(SELECT "id", "name" FROM "users") EXCEPT (SELECT "id", "name" FROM "admins")',
       [],
     ],
     [
@@ -791,7 +825,7 @@ describe("class Builder", () => {
           sql.select("id", "name").from("buyers"),
         ),
       ),
-      'SELECT "id", "name" FROM "users" EXCEPT (SELECT "id", "name" FROM "admins" EXCEPT SELECT "id", "name" FROM "sellers" EXCEPT SELECT "id", "name" FROM "buyers")',
+      '(SELECT "id", "name" FROM "users") EXCEPT ((SELECT "id", "name" FROM "admins") EXCEPT (SELECT "id", "name" FROM "sellers") EXCEPT (SELECT "id", "name" FROM "buyers"))',
       [],
     ],
 

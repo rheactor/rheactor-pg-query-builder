@@ -212,7 +212,7 @@ export abstract class Builder {
       operations.push(join.lateral === true ? `${join.type} JOIN LATERAL ` : `${join.type} JOIN `);
 
       if (join.table instanceof Builder) {
-        operations.push("(", ...operation(join.table), ")");
+        operations.push(...operation(join.table));
 
         if (join.alias !== undefined) {
           operations.push(" AS ", ...operation(join.alias));
