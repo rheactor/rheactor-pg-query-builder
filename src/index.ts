@@ -68,8 +68,12 @@ const functions = {
     return new BuilderCase(expression);
   },
 
-  cast(expression: Expression, castType: Cast): Expression {
-    return { type: "CAST", expression, cast: castType };
+  cast(expression: Expression, ...casts: Cast[]): Expression {
+    if (casts.length === 0) {
+      return expression;
+    }
+
+    return { type: "CAST", expression, casts };
   },
 
   collate(expression: Expression, collateType: Collate = "C"): Expression {

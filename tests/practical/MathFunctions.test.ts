@@ -110,10 +110,10 @@ describe("Mathematical Functions and Operators (9.3)", () => {
         builder: sql
           .select()
           .selectAliased(
-            sql.div(sql.cast(sql.staticValue(5), "NUMERIC"), sql.staticValue(2)),
+            sql.div(sql.cast(sql.staticValue(5), "numeric"), sql.staticValue(2)),
             "result",
           ),
-        query: 'SELECT (CAST(5 AS NUMERIC) / 2) AS "result"',
+        query: 'SELECT (5::"numeric" / 2) AS "result"',
         expected: "2.5000000000000000",
       },
       {

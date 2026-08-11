@@ -1,5 +1,5 @@
 //#region src/types/Cast.d.ts
-type Cast = "BIGINT" | "BOOLEAN" | "BYTEA" | "DATE" | "DOUBLE PRECISION" | "INTEGER" | "JSON" | "JSONB" | "NUMERIC" | "REAL" | "SMALLINT" | "TEXT" | "TIMESTAMP" | "VARCHAR";
+type Cast = "bigint" | "boolean" | "bytea" | "date" | "double precision" | "integer" | "json" | "jsonb" | "numeric" | "real" | "smallint" | "text" | "timestamp" | "timestamptz" | "uuid" | "varchar" | (string & {});
 //#endregion
 //#region src/types/Collate.d.ts
 type Collate = string;
@@ -66,7 +66,7 @@ type Expression = Builder | Identifier | {
 } | {
   type: "CAST";
   expression: Expression;
-  cast: Cast;
+  casts: Cast[];
 } | {
   type: "COLLATE";
   expression: Expression;
@@ -509,7 +509,7 @@ declare const functions: {
   betweenSymmetric(identifier: Identifier, from: Expression, to: Expression): Expression;
   call: typeof call;
   case(expression?: Expression): BuilderCase;
-  cast(expression: Expression, castType: Cast): Expression;
+  cast(expression: Expression, ...casts: Cast[]): Expression;
   collate(expression: Expression, collateType?: Collate): Expression;
   concatOp(sideA: Expression, sideB: Expression): Expression;
   containedBy(sideA: Expression, sideB: Expression): Expression;

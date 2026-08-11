@@ -1,4 +1,4 @@
-import { escapeIdentifier, escapeLiteral } from "@rheactor/rheactor-core";
+import { escapeIdentifier, escapeIdentifierSmart, escapeLiteral } from "@rheactor/rheactor-core";
 
 // oxlint-disable-next-line import/no-cycle
 import { Builder } from "#/Builder";
@@ -191,7 +191,10 @@ export function operation(expression: Expression): Operation[] {
     }
 
     case "CAST": {
-      return ["CAST(", ...operation(expression.expression), ` AS ${expression.cast})`];
+      return [
+        ...operation(expression.expression),
+        ...expression.casts.flatMap((cast) => [`::${escapeIdentifierSmart(cast)}`]),
+      ];
     }
 
     case "RAW": {

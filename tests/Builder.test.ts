@@ -242,14 +242,10 @@ describe("class Builder", () => {
       "SELECT TRUE WHERE '{\"abc\":123}'",
       [],
     ],
-    [
-      sql.select().where(sql.cast("test", "INTEGER")),
-      'SELECT TRUE WHERE CAST("test" AS INTEGER)',
-      [],
-    ],
+    [sql.select().where(sql.cast("test", "integer")), 'SELECT TRUE WHERE "test"::"integer"', []],
     [
       sql.select().where(sql.cast(sql.value("test"), "INTEGER")),
-      "SELECT TRUE WHERE CAST($1 AS INTEGER)",
+      'SELECT TRUE WHERE $1::"INTEGER"',
       ["test"],
     ],
     [sql.select().where(sql.call("NOW")), "SELECT TRUE WHERE NOW()", []],
@@ -558,8 +554,8 @@ describe("class Builder", () => {
       [],
     ],
     [
-      sql.select("category").from("products").groupBy(sql.cast("category", "TEXT")),
-      'SELECT "category" FROM "products" GROUP BY CAST("category" AS TEXT)',
+      sql.select("category").from("products").groupBy(sql.cast("category", "text")),
+      'SELECT "category" FROM "products" GROUP BY "category"::text',
       [],
     ],
     [

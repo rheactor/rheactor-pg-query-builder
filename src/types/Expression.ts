@@ -58,7 +58,7 @@ export type Expression =
     }
   | { type: "ALL" | "ANY"; operator: ComparisonOperator; sideA: Expression; sideB: Expression }
   | { type: "CALL"; identifier: Identifier; functionArguments: Expression[] }
-  | { type: "CAST"; expression: Expression; cast: Cast }
+  | { type: "CAST"; expression: Expression; casts: Cast[] }
   | { type: "COLLATE"; expression: Expression; collate: Collate }
   | { type: "EXCLUDED"; identifier: Identifier }
   | { type: "EXISTS"; builder: Builder }
