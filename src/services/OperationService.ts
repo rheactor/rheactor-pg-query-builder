@@ -1,4 +1,4 @@
-import { escapeIdentifier, escapeIdentifierSmart, escapeLiteral } from "@rheactor/rheactor-core";
+import { escapeIdentifierSmart, escapeLiteral } from "@rheactor/rheactor-core";
 
 // oxlint-disable-next-line import/no-cycle
 import { Builder } from "#/Builder";
@@ -42,7 +42,7 @@ export function operation(expression: Expression): Operation[] {
 
     const identifier = expression.replaceAll(/["\\`]/gv, "");
 
-    return [escapeIdentifier(identifier)];
+    return [escapeIdentifierSmart(identifier)];
   }
 
   if (expression instanceof Builder) {
